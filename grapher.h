@@ -1,8 +1,8 @@
 #ifndef GRAPHER_H
 #define GRAPHER_H
 
-#define SCREEN_WIDTH 640
-#define SCREEN_HEIGHT 480
+#define SCREEN_WIDTH 600
+#define SCREEN_HEIGHT 600
 #define SCREEN_BPP 32 // Bits per pixel
 #define PIXEL_WIDTH 8
 #define CHANNELS 3 // 3 channels for RGB
@@ -39,7 +39,7 @@ class RGBPixel {
 
 };
 
-RGBPixel numberToPixel(ComplexNumber);
+RGBPixel numberToPixel(ComplexNumber, double);
 
 ostream& operator <<(ostream &, const RGBPixel &);
 
@@ -49,12 +49,10 @@ void set_pixel32(SDL_Surface *, int, int, RGBPixel);
 
 SDL_Surface * random_image(int, int, int);
 
-SDL_Surface * map_function_to_pixels(int, int, int, int, int, ComplexNumber (*)(ComplexNumber));
+SDL_Surface * map_function_to_pixels(int, int, int, double, double, double, double, ComplexNumber (*)(ComplexNumber));
 
 void display_image(SDL_Surface *, long);
 
-int * hslToRgb(double h, double s, double l);
-
-double hslToRgbHelper(double, double, double);
+double * hslToRgb(double h, double s, double l);
 
 #endif

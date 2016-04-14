@@ -63,15 +63,16 @@ RGBPixel numberToPixel(ComplexNumber z, double maximum) {
 	RGBPixel p (8, 0, 0, 0);
 	double hue, saturation, lightness;
 
-	hue = z.angle() / (2 * PI);
-	saturation = 0.5;
+	hue = (z.angle() + PI) / (2 * PI); // Add PI to transform range from [- PI, PI] to [0, 2 * PI]
+	saturation = 1;
 	lightness = z.mag() / maximum;
 
-	int *rgb = hslToRgb(hue, saturation, lightness);
+	double *rgb = hslToRgb(hue, saturation, lightness);
 
-	p.set_red(rgb[0]);
-	p.set_green(rgb[1]);
-	p.set_blue(rgb[2]);
+	// Add rounded versions of RGB to pixel, then return.
+	p.set_red((int) (rgb[0] + 0.5));
+	p.set_green((int) (rgb[1] + 0.5));
+	p.set_blue((int) (rgb[2] + 0.5));
 
 	free(rgb);
 	return p;
@@ -141,7 +142,7 @@ SDL_Surface * random_image(int width, int height, int bpp) {
 }
 
 // w_scale is the number of pixels per unit on the real axis, h_scale is the number of pixels per unit on the imaginary axis.
-SDL_Surface * map_function_to_pixels(int width, int w_scale, int height, int h_scale, int bpp, ComplexNumber (*f)(ComplexNumber)) {
+SDL_Surface * map_function_to_pixels(int width, int height, int bpp, double x_min, double x_max, double y_min, double y_max, ComplexNumber (*f)(ComplexNumber)) {
 	// Create the surface to return, initially empty.
 	int blue_mask = ~((-1) << bpp); // Red mask
 	int green_mask = blue_mask << bpp; // Green mask
@@ -168,26 +169,37 @@ SDL_Surface * map_function_to_pixels(int width, int w_scale, int height, int h_s
 	double x, y;
 	for (int i = 0; i < width; i++) {
 		values[i] = (ComplexNumber *) malloc(sizeof(ComplexNumber) * height);
-		for (int j = 0, y = - ((double) height) / (2 * h_scale); j < height; j++) {
+		for (int j = 0; j < height; j++) {
 			// Center the coordinate axes, scale the x- and y-coordinates appropriately.
-			x = (i - ((double) width) / 2) / w_scale;
-			y = (j - ((double) height) / 2) / h_scale;
+			x = x_min + (((double) i) / width) * (x_max - x_min);
+			y = y_min + (((double) j) / height) * (y_max - y_min);
 
 			z.set(x, y); // Build the complex number
-			values[i][j] = f(z);
+
+			try { // Store the image of f at z
+				values[i][j] = f(z);
+			} catch (ComplexDivisionByZeroException &e) {
+				// Caught division by zero exception, so z is a pole of f; set to infinity
+				z.set(numeric_limits<double>::infinity(), numeric_limits<double>::infinity());
+				values[i][j] = z;
+			}
 
 			// Update maximum.
-			if (values[i][j].mag() > maximum) {
+			if (values[i][j].mag() > maximum && z.mag() != numeric_limits<double>::infinity()) {
 				maximum = values[i][j].mag();
 			}
 		}
 	}
 
+	z.set(numeric_limits<double>::infinity(), numeric_limits<double>::infinity()); // Represents infinity
+	RGBPixel white (8, 255, 255, 255); // White pixel, for coloring infinite values
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
-			set_pixel32(coordinate_plane, i, j, numberToPixel(values[i][j], maximum)); // Set the pixel to its value
-
-			// Implement logic to handle poles (division by zero)
+			if (values[i][j] != z) {
+				set_pixel32(coordinate_plane, i, j, numberToPixel(values[i][j], maximum)); // Set the pixel to its value
+			} else {
+				set_pixel32(coordinate_plane, i, j, white);
+			}
 		}
 	}
 
@@ -227,42 +239,57 @@ void display_image(SDL_Surface *image, long display_time) {
 }
 
 // Converts HSL to RGB. Assumes 0 <= h, s, l <= 1.
-int * hslToRgb(double h, double s, double l) {
-	double r, g, b;
+double * hslToRgb(double h, double s, double l) {
+	double mid1, mid2, v, m;
+    double r, g, b;
 
-	if (s == 0) {
-		r = g = b = l;
-	} else {
-		double q = (l < 0.5) ? (l * (1 + s)) : (l + s - l * s);
-		double p = 2 * l - q;
+    r = g = b = l;
+    v = (l <= 0.5) ? (l * (1.0 + s)) : (l + s - l * s);
 
-		r = hslToRgbHelper(p, q, h + 1.0 / 3);
-		g = hslToRgbHelper(p, q, h);
-		b = hslToRgbHelper(p, q, h - 1.0 / 3);
-	}
+    if (v > 0) {
+		int sextant = (int) (h * 6);
+		m = l + l - v;
+		mid1 = m + ((v - m) * ((h * 6) - sextant));
+		mid2 = v - ((v - m) * ((h * 6) - sextant));
 
-	int *ret = (int *) malloc(sizeof(int) * 3);
-	ret[0] = (int) (r * 255 + 0.5);
-	ret[1] = (int) (g * 255 + 0.5);
-	ret[2] = (int) (b * 255 + 0.5);
+		switch (sextant) {
+		    case 0:
+				r = v;
+				g = mid1;
+				b = m;
+				break;
+		    case 1:
+		        r = mid2;
+		        g = v;
+		        b = m;
+		        break;
+		    case 2:
+		        r = m;
+		        g = v;
+		        b = mid1;
+		        break;
+		    case 3:
+		        r = m;
+		        g = mid2;
+		        b = v;
+		        break;
+		    case 4:
+		        r = mid1;
+		        g = m;
+		        b = v;
+		        break;
+		    case 5:
+		        r = v;
+		        g = m;
+		        b = mid2;
+		        break;
+        }
+    }
+    
+    double * rgb = (double *) malloc(sizeof(double) * 3);
+    rgb[0] = r * 255;
+    rgb[1] = g * 255;
+    rgb[2] = b * 255;
 
-	return ret;
-}
-
-double hslToRgbHelper(double p, double q, double t) {
-	if (t < 0) {
-		t++;
-	} else if (t > 1) {
-		t--;
-	}
-
-	if (t < 1.0 / 6) {
-		return p + (q - p) * 6 * t;
-	} else if (t < 1.0 / 2) {
-		return q;
-	} else if (t < 2.0 / 3) {
-		return p + (q - p) * (2/3 - t) * 6;
-	} else {
-	    return p;		
-	}
+    return rgb;		
 }

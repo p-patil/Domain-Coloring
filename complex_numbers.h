@@ -106,4 +106,10 @@ class ComplexNumber {
  */
 ostream& operator <<(ostream &, const ComplexNumber &);
 
+// Division by zero exception class, so that the poles of complex functions can be found by catching this exception.
+class ComplexDivisionByZeroException : public exception {
+	public:
+		const char * what() const throw();
+};
+
 #endif

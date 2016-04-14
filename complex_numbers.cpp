@@ -1,6 +1,7 @@
 #include <cmath>
 #include <stdexcept>
 #include <iostream>
+#include <exception>
 #include "complex_numbers.h"
 
 using namespace std;
@@ -165,7 +166,8 @@ ComplexNumber operator *(double x, const ComplexNumber &z) {
  */
 ComplexNumber ComplexNumber::operator /(const ComplexNumber &z) const {
 	if (z.mag() == 0) {
-		throw logic_error("Division by zero");
+		ComplexDivisionByZeroException zero_div_excep;
+		throw zero_div_excep;
 	}
 
 	double div_re = (re * z.real() + im * z.imag()) / (z.mag() * z.mag());
@@ -233,4 +235,8 @@ ostream& operator <<(ostream &stream, const ComplexNumber &z) {
 	}
 
 	return stream;
+}
+
+const char * ComplexDivisionByZeroException::what() const throw() {
+	return "Complex division by zero";
 }
