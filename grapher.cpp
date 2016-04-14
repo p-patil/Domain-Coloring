@@ -4,8 +4,10 @@
 #include <cstdlib>
 #include <limits>
 #include <cmath>
+
 #include "grapher.h"
 #include "complex_numbers.h"
+#include "omp.h"
 
 using namespace std;
 
@@ -164,11 +166,17 @@ SDL_Surface * map_function_to_pixels(int width, int height, int bpp, double x_mi
 
 	// Compute the range of the given function over the given domain, and find the maximum (for use in pixel conversion).
 	ComplexNumber **values = (ComplexNumber **) malloc(sizeof(ComplexNumber *) * width);
+	double *maximum_arr = (double *) malloc(sizeof(double) * omp_get_num_threads());
+	for (int i = 0; i < omp_get_num_threads(); i++) {
+		maximum_arr[i] = - numeric_limits<double>::infinity();
+	}
+
 	ComplexNumber z (0, 0);
-	double maximum = - numeric_limits<double>::infinity();
 	double x, y;
+	#pragma omp parallel for private(z, x, y)
 	for (int i = 0; i < width; i++) {
 		values[i] = (ComplexNumber *) malloc(sizeof(ComplexNumber) * height);
+
 		for (int j = 0; j < height; j++) {
 			// Center the coordinate axes, scale the x- and y-coordinates appropriately.
 			x = x_min + (((double) i) / width) * (x_max - x_min);
@@ -185,14 +193,25 @@ SDL_Surface * map_function_to_pixels(int width, int height, int bpp, double x_mi
 			}
 
 			// Update maximum.
-			if (values[i][j].mag() > maximum && z.mag() != numeric_limits<double>::infinity()) {
-				maximum = values[i][j].mag();
+			if (values[i][j].mag() > maximum_arr[omp_get_thread_num()] && z.mag() != numeric_limits<double>::infinity()) {
+				maximum_arr[omp_get_thread_num()] = values[i][j].mag();
 			}
 		}
 	}
 
+	// Join all maxima found by threads
+	double maximum = - numeric_limits<double>::infinity();
+	for (int i = 0; i < omp_get_num_threads(); i++) {
+		if (maximum_arr[i] > maximum) {
+			maximum = maximum_arr[i];
+		}
+	}
+	free(maximum_arr);
+
 	z.set(numeric_limits<double>::infinity(), numeric_limits<double>::infinity()); // Represents infinity
 	RGBPixel white (8, 255, 255, 255); // White pixel, for coloring infinite values
+
+	#pragma omp parallel for
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
 			if (values[i][j] != z) {

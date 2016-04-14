@@ -7,9 +7,9 @@
 
 using namespace std;
 
-ComplexNumber square(ComplexNumber z) { return z * z; }
-
 ComplexNumber identity(ComplexNumber z) { return z; }
+
+ComplexNumber square(ComplexNumber z) { return z * z; }
 
 ComplexNumber exponential(ComplexNumber z) {
 	Exponential exp (1, 1);
@@ -35,8 +35,8 @@ int main(int argc, char **argv) {
 		return -1;
 	}
 
-	SDL_Surface *image = map_function_to_pixels(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP, -3, 3, -3, 3, polynomial);
-	display_image(image, 5000);
+	SDL_Surface *image = map_function_to_pixels(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP, -3, 3, -3, 3, identity);
+	display_image(image, 3000);
 
 	SDL_FreeSurface(image);
 	SDL_Quit();
