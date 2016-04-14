@@ -1,11 +1,16 @@
 #ifndef COMPLEX_NUMBERS_H
 #define COMPLEX_NUMBERS_H
 
+#define PI 3.1415926535
+
 using namespace std;
 
 class ComplexNumber {
 	double re, im; // Real and imaginary components.
 	double r, theta; // Corresponding polar coordinates.
+
+	private:
+		void initialize_polar(double, double);
 
 	public:
 		ComplexNumber();
@@ -45,6 +50,8 @@ class ComplexNumber {
 		bool is_real(void);
 
 		bool is_imaginary(void);
+
+		void set(double, double);
 
 		/**
 		 * Assignment operator.

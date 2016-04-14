@@ -3,41 +3,11 @@
 #include <iostream>
 #include "complex_numbers.h"
 
-#define PI 3.1415926535
-
 using namespace std;
 
 ComplexNumber::ComplexNumber() {};
 
-ComplexNumber::ComplexNumber(double real, double imaginary) : re(real), im(imaginary) {
-	r = sqrt(re * re + im * im);
-
-	if (re == 0 && im == 0) {
-		theta = 0;
-	} else if (im == 0) {
-		if (re > 0) {
-			theta = 0;
-		} else {
-			theta = PI;
-		}
-	} else if (re == 0) {
-		if (im > 0) {
-			theta = PI / 2;
-		} else {
-			theta = - PI / 2;
-		}
-	} else {
-		theta = atan(abs(im) / abs(re));
-
-		if (re < 0 && im > 0) {
-			theta = PI - theta;
-		} else if (re < 0 && im < 0) {
-			theta = -(PI - theta);
-		} else if (re > 0 && im < 0) {
-			theta = -theta;
-		}
-	}
-}
+ComplexNumber::ComplexNumber(double real, double imag) : re(real), im(imag) { initialize_polar(real, imag); }
 
 ComplexNumber::ComplexNumber(double x) : re(x), im(0) {
 	r = abs(x);
@@ -49,33 +19,55 @@ ComplexNumber::ComplexNumber(double x) : re(x), im(0) {
 	}
 }
 
+void ComplexNumber::initialize_polar(double real, double imag) {
+	r = sqrt(real * real + imag * imag);
+
+	if (real == 0 && imag == 0) {
+		theta = 0;
+	} else if (imag == 0) {
+		if (real > 0) {
+			theta = 0;
+		} else {
+			theta = PI;
+		}
+	} else if (real == 0) {
+		if (imag > 0) {
+			theta = PI / 2;
+		} else {
+			theta = - PI / 2;
+		}
+	} else {
+		theta = atan(abs(imag) / abs(real));
+
+		if (real < 0 && imag > 0) {
+			theta = PI - theta;
+		} else if (real < 0 && imag < 0) {
+			theta = -(PI - theta);
+		} else if (real > 0 && imag < 0) {
+			theta = -theta;
+		}
+	}
+}
+
 /**
  * Returns real part this complex number.
  */
-double ComplexNumber::real(void) const {
-	return re;
-}
+double ComplexNumber::real(void) const { return re; }
 
 /**
  * Returns the imaginary part of this complex number.
  */
-double ComplexNumber::imag(void) const {
-	return im;
-}
+double ComplexNumber::imag(void) const { return im; }
 
 /**
  * Magnitude of the complex number.
  */
-double ComplexNumber::mag(void) const {
-	return r;
-}
+double ComplexNumber::mag(void) const { return r; }
 
 /**
  * Polar angle of the complex number, in radians.
  */
-double ComplexNumber::angle(void) const {
-	return theta;
-}
+double ComplexNumber::angle(void) const { return theta; }
 
 /**
  * Complex conjugate.
@@ -85,12 +77,15 @@ ComplexNumber ComplexNumber::conjugate(void) const {
 	return w;
 }
 
-bool ComplexNumber::is_real(void) {
-	return im == 0;
-}
+bool ComplexNumber::is_real(void) { return im == 0; }
 
-bool ComplexNumber::is_imaginary(void) {
-	return re == 0 && im != 0;
+bool ComplexNumber::is_imaginary(void) { return re == 0 && im != 0; }
+
+void ComplexNumber::set(double real, double imag) {
+	re = real;
+	im = imag;
+
+	initialize_polar(real, imag);
 }
 
 /**
@@ -115,9 +110,7 @@ bool ComplexNumber::operator ==(const ComplexNumber &z) const {
 	}
 }
 
-bool ComplexNumber::operator !=(const ComplexNumber &z) const {
-	return !(*this == z);
-}
+bool ComplexNumber::operator !=(const ComplexNumber &z) const { return !(*this == z); }
 
 /**
  * Complex addition.

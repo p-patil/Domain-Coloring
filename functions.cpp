@@ -15,13 +15,9 @@ Polynomial::Polynomial(ComplexNumber coeffs[], int length) {
 	}
 }
 
-int Polynomial::get_degree(void) const {
-	return degree;
-}
+int Polynomial::get_degree(void) const { return degree; }
 
-ComplexNumber * Polynomial::get_coefficients(void) const {
-	return coefficients;
-}
+ComplexNumber * Polynomial::get_coefficients(void) const { return coefficients; }
 
 // Override
 ComplexNumber Polynomial::eval(const ComplexNumber z) const {
@@ -39,9 +35,7 @@ ComplexNumber Polynomial::eval(const ComplexNumber z) const {
 }
 
 // Destructor.
-Polynomial::~Polynomial(void) {
-	delete[] coefficients;
-}
+Polynomial::~Polynomial(void) { delete[] coefficients; }
 
 Polynomial Polynomial::operator =(const Polynomial &p) {
 	if (this != &p) {
@@ -71,9 +65,7 @@ bool Polynomial::operator ==(const Polynomial &z) const {
 	return true;
 }
 
-bool Polynomial::operator !=(const Polynomial &z) const {
-	return !(*this == z);
-}
+bool Polynomial::operator !=(const Polynomial &z) const { return !(*this == z); }
 
 /**
  * Control how a polynomial is printed.
@@ -170,13 +162,9 @@ ostream& operator <<(ostream &stream, const Polynomial &p) {
 
 // Begin power class.
 
-Power::Power(ComplexNumber exponent) {
-	this->exponent = exponent;
-}
+Power::Power(ComplexNumber exponent) { this->exponent = exponent; }
 
-ComplexNumber Power::get_exponent(void) {
-	return exponent;
-}
+ComplexNumber Power::get_exponent(void) { return exponent; }
 
 // Override.
 // (r * exp(i * theta))^(a + bi) = r^(a + bi) * exp(i * theta * a - theta * b)
@@ -205,13 +193,9 @@ ComplexNumber Power::iPower(double a) const {
 
 // Begin N-th root class.
 
-NthRoot::NthRoot(int n) {
-	this->n = n;
-}
+NthRoot::NthRoot(int n) { this->n = n; }
 
-int NthRoot::get_n(void) {
-	return n;
-}
+int NthRoot::get_n(void) { return n; }
 
 // Override.
 ComplexNumber NthRoot::eval(const ComplexNumber z) const {
@@ -228,13 +212,9 @@ Exponential::Exponential(ComplexNumber coeff, ComplexNumber l) {
 	this->lambda = l;
 }
 
-ComplexNumber Exponential::get_coefficient(void) const {
-	return coefficient;
-}
+ComplexNumber Exponential::get_coefficient(void) const { return coefficient; }
 
-ComplexNumber Exponential::get_lambda(void) const {
-	return lambda;
-}
+ComplexNumber Exponential::get_lambda(void) const { return lambda; }
 
 ComplexNumber Exponential::eval(const ComplexNumber z) const {
 	ComplexNumber exponent = lambda * z;
@@ -255,13 +235,11 @@ Exponential Exponential::operator =(const Exponential &z) {
 	return *this;
 }
 
-bool Exponential::operator ==(const Exponential &z) const {
+bool Exponential::operator ==(const Exponential &z) const { 
 	return (coefficient == z.get_coefficient()) && (lambda == z.get_lambda());
 }
 
-bool Exponential::operator !=(const Exponential &z) const {
-	return !(*this == z);
-}
+bool Exponential::operator !=(const Exponential &z) const { return !(*this == z); }
 
 /**
  * Control how an exponential is printed.
@@ -309,17 +287,11 @@ Logarithm::Logarithm(ComplexNumber coefficient, ComplexNumber lambda, ComplexNum
 	this->base = base;
 }
 
-ComplexNumber Logarithm::get_coefficient(void) const {
-	return coefficient;
-}
+ComplexNumber Logarithm::get_coefficient(void) const { return coefficient; }
 
-ComplexNumber Logarithm::get_lambda(void) const {
-	return lambda;
-}
+ComplexNumber Logarithm::get_lambda(void) const { return lambda; }
 
-ComplexNumber Logarithm::get_base(void) const {
-	return base;
-}
+ComplexNumber Logarithm::get_base(void) const { return base; }
 
 // Override.
 // ln(z) = ln(|r|) + i * theta, where z = r * e^(i * theta)
@@ -351,9 +323,7 @@ bool Logarithm::operator ==(const Logarithm &z) const {
 	return (base == z.get_base()) && (coefficient == z.get_coefficient()) && (lambda == z.get_lambda());
 }
 
-bool Logarithm::operator !=(const Logarithm &z) const {
-	return !(*this == z);
-}
+bool Logarithm::operator !=(const Logarithm &z) const { return !(*this == z); }
 
 /**
  * Controls how a logarithm is printed.
@@ -428,17 +398,11 @@ Sine::Sine(ComplexNumber a, ComplexNumber b, ComplexNumber c) {
 	this->c = c;
 }
 
-ComplexNumber Sine::getA(void) const {
-	return a;
-}
+ComplexNumber Sine::getA(void) const { return a; }
 
-ComplexNumber Sine::getB(void) const {
-	return b;
-}
+ComplexNumber Sine::getB(void) const { return b; }
 
-ComplexNumber Sine::getC(void) const {
-	return c;
-}
+ComplexNumber Sine::getC(void) const { return c; }
 
 ComplexNumber Sine::eval(const ComplexNumber z) const {
 	ComplexNumber i (0, 1);
@@ -514,17 +478,11 @@ Cosine::Cosine(ComplexNumber a, ComplexNumber b, ComplexNumber c) {
 	this->c = c;
 }
 
-ComplexNumber Cosine::getA(void) const {
-	return a;
-}
+ComplexNumber Cosine::getA(void) const { return a; }
 
-ComplexNumber Cosine::getB(void) const {
-	return b;
-}
+ComplexNumber Cosine::getB(void) const { return b; }
 
-ComplexNumber Cosine::getC(void) const {
-	return c;
-}
+ComplexNumber Cosine::getC(void) const { return c; }
 
 ComplexNumber Cosine::eval(const ComplexNumber z) const {
 	ComplexNumber i (0, 1);
@@ -595,17 +553,11 @@ Tangent::Tangent(ComplexNumber a, ComplexNumber b, ComplexNumber c) {
 	this->c = c;
 }
 
-ComplexNumber Tangent::getA(void) const {
-	return a;
-}
+ComplexNumber Tangent::getA(void) const { return a; }
 
-ComplexNumber Tangent::getB(void) const {
-	return b;
-}
+ComplexNumber Tangent::getB(void) const { return b; }
 
-ComplexNumber Tangent::getC(void) const {
-	return c;
-}
+ComplexNumber Tangent::getC(void) const { return c; }
 
 ComplexNumber Tangent::eval(const ComplexNumber z) const {
 	Sine sine (a, b, c);
