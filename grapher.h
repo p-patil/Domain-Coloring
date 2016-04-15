@@ -39,13 +39,7 @@ class RGBPixel {
 
 };
 
-RGBPixel numberToPixel(ComplexNumber, double);
-
 ostream& operator <<(ostream &, const RGBPixel &);
-
-RGBPixel get_pixel32(const SDL_Surface *, int, int);
-
-void set_pixel32(SDL_Surface *, int, int, RGBPixel);
 
 SDL_Surface * random_image(int, int, int);
 
@@ -53,6 +47,14 @@ SDL_Surface * map_function_to_pixels(int, int, int, double, double, double, doub
 
 void display_image(SDL_Surface *, long);
 
-double * hslToRgb(double h, double s, double l);
+// HELPER FUNCTIONS
+
+RGBPixel get_pixel32(const SDL_Surface *, int, int);
+
+void set_pixel32(SDL_Surface *, int, int, RGBPixel);
+
+RGBPixel numberToPixel(ComplexNumber, double);
+
+double * hsl_to_rgb(double h, double s, double l);
 
 #endif

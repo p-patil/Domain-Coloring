@@ -78,9 +78,9 @@ ComplexNumber ComplexNumber::conjugate(void) const {
 	return w;
 }
 
-bool ComplexNumber::is_real(void) { return im == 0; }
+bool ComplexNumber::is_real(void) const { return im == 0; }
 
-bool ComplexNumber::is_imaginary(void) { return re == 0 && im != 0; }
+bool ComplexNumber::is_imaginary(void) const { return re == 0 && im != 0; }
 
 void ComplexNumber::set(double real, double imag) {
 	re = real;

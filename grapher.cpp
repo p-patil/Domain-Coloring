@@ -61,48 +61,10 @@ int RGBPixel::as_int(void) const {
 	return (red << (bits_per_pixel * 2)) | (green << bits_per_pixel) | blue;
 }
 
-RGBPixel numberToPixel(ComplexNumber z, double maximum) {
-	RGBPixel p (8, 0, 0, 0);
-	double hue, saturation, lightness;
-
-	hue = (z.angle() + PI) / (2 * PI); // Add PI to transform range from [- PI, PI] to [0, 2 * PI]
-	saturation = 1;
-	lightness = z.mag() / maximum;
-
-	double *rgb = hslToRgb(hue, saturation, lightness);
-
-	// Add rounded versions of RGB to pixel, then return.
-	p.set_red((int) (rgb[0] + 0.5));
-	p.set_green((int) (rgb[1] + 0.5));
-	p.set_blue((int) (rgb[2] + 0.5));
-
-	free(rgb);
-	return p;
-}
-
 // Override
 ostream& operator <<(ostream &stream, const RGBPixel &p) {
 	stream << "(" << p.get_red() << ", " << p.get_green() << ", " << p.get_blue() << ")";
 	return stream;
-}
-
-// Returns the pixel at coordinate (i, j) on the given surface. Assumes width, height, depth > 0 and depth <= 4.
-RGBPixel get_pixel32(const SDL_Surface *surface, int x, int y) {
-	// Retrieve pixel, as a 32-bit int.
-	int pixel_as_int = ((int *) surface->pixels)[x + (y * surface->w)];
-
-	// Create and return an RGBPixel.
-	RGBPixel p (PIXEL_WIDTH, pixel_as_int);
-	return p;
-}
-
-// Sets the pixel at coordinate (i, j) on the given surface to the given pixel.
-void set_pixel32(SDL_Surface *surface, int x, int y, RGBPixel pixel) {
-	// Get the pixel array.
-	int *pixels = (int *) surface->pixels;
-
-	// Write the given RGBPixel, as a 32-bit int, to the array.
-	pixels[x + (y * surface->w)] = pixel.as_int();
 }
 
 // Randomly initializes pixels. Useful for testing purposes.
@@ -143,12 +105,13 @@ SDL_Surface * random_image(int width, int height, int bpp) {
 	return image;
 }
 
-// w_scale is the number of pixels per unit on the real axis, h_scale is the number of pixels per unit on the imaginary axis.
+// Primary function that returns a surface which displays the graph of the given complex function in the given bounds. w_scale is the number of pixels 
+// per unit on the real axis, h_scale is the number of pixels per unit on the imaginary axis.
 SDL_Surface * map_function_to_pixels(int width, int height, int bpp, double x_min, double x_max, double y_min, double y_max, ComplexNumber (*f)(ComplexNumber)) {
 	// Create the surface to return, initially empty.
-	int blue_mask = ~((-1) << bpp); // Red mask
+	int blue_mask = ~((-1) << bpp); // Blue mask
 	int green_mask = blue_mask << bpp; // Green mask
-	int red_mask = blue_mask << (bpp * 2); // Blue mask
+	int red_mask = blue_mask << (bpp * 2); // Red mask
 
 	SDL_Surface *coordinate_plane = SDL_CreateRGBSurface(SDL_SWSURFACE, // Flag specifying to create image in memory
 													     width, // Width of image
@@ -173,7 +136,7 @@ SDL_Surface * map_function_to_pixels(int width, int height, int bpp, double x_mi
 
 	ComplexNumber z (0, 0);
 	double x, y;
-	#pragma omp parallel for private(z, x, y)
+	#pragma omp parallel for private(z, x, y) // Parallelize computation.
 	for (int i = 0; i < width; i++) {
 		values[i] = (ComplexNumber *) malloc(sizeof(ComplexNumber) * height);
 
@@ -220,6 +183,8 @@ SDL_Surface * map_function_to_pixels(int width, int height, int bpp, double x_mi
 				set_pixel32(coordinate_plane, i, j, white);
 			}
 		}
+
+		free(values[i]); // Free memory after use
 	}
 
 	// Unlock threads if necessary.
@@ -228,11 +193,7 @@ SDL_Surface * map_function_to_pixels(int width, int height, int bpp, double x_mi
 	}
 
 	// Free memory and return.
-	for (int i = 0; i < width; i++) {
-		free(values[i]);
-	}
 	free(values);
-
 	return coordinate_plane;
 }
 
@@ -257,8 +218,48 @@ void display_image(SDL_Surface *image, long display_time) {
 	SDL_Delay(display_time); // Display screen for 2000 milliseconds
 }
 
+// HELPER FUNCTIONS
+
+// Returns the pixel at coordinate (i, j) on the given surface. Assumes width, height, depth > 0 and depth <= 4.
+RGBPixel get_pixel32(const SDL_Surface *surface, int x, int y) {
+	// Retrieve pixel, as a 32-bit int.
+	int pixel_as_int = ((int *) surface->pixels)[x + (y * surface->w)];
+
+	// Create and return an RGBPixel.
+	RGBPixel p (PIXEL_WIDTH, pixel_as_int);
+	return p;
+}
+
+// Sets the pixel at coordinate (i, j) on the given surface to the given pixel.
+void set_pixel32(SDL_Surface *surface, int x, int y, RGBPixel pixel) {
+	// Get the pixel array.
+	int *pixels = (int *) surface->pixels;
+
+	// Write the given RGBPixel, as a 32-bit int, to the array.
+	pixels[x + (y * surface->w)] = pixel.as_int();
+}
+
+RGBPixel numberToPixel(ComplexNumber z, double maximum) {
+	RGBPixel p (8, 0, 0, 0);
+	double hue, saturation, lightness;
+
+	hue = (z.angle() + PI) / (2 * PI); // Add PI to transform range from [- PI, PI] to [0, 2 * PI]
+	saturation = 1;
+	lightness = z.mag() / maximum;
+
+	double *rgb = hsl_to_rgb(hue, saturation, lightness);
+
+	// Add rounded versions of RGB to pixel, then return.
+	p.set_red((int) (rgb[0] + 0.5));
+	p.set_green((int) (rgb[1] + 0.5));
+	p.set_blue((int) (rgb[2] + 0.5));
+
+	free(rgb);
+	return p;
+}
+
 // Converts HSL to RGB. Assumes 0 <= h, s, l <= 1.
-double * hslToRgb(double h, double s, double l) {
+double * hsl_to_rgb(double h, double s, double l) {
 	double mid1, mid2, v, m;
     double r, g, b;
 

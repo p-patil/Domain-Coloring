@@ -7,8 +7,30 @@
 using namespace std;
 
 class Function {
+	protected:
+		// Virtual function used to allow for polymorphic overload of << operator.
+		virtual void print_to_stream(ostream &) const;
+
 	public:
 		virtual ComplexNumber eval(const ComplexNumber) const = 0;
+	
+	friend ostream& operator <<(ostream &, const Function &);
+
+};
+
+ostream& operator <<(ostream &, const Function &);
+
+class Constant : public Function {
+	ComplexNumber constant;
+
+	public:
+		Constant(const ComplexNumber);
+
+		ComplexNumber get_constant(void) const;
+
+		ComplexNumber eval(const ComplexNumber) const override;
+
+		void print_to_stream(ostream &) const override;
 };
 
 // Polynomials.
@@ -19,42 +41,39 @@ class Polynomial : public Function {
 	public:
 		Polynomial(ComplexNumber[], int);
 
+		// Destructor.
+		~Polynomial(void);
+		
 		int get_degree(void) const;
 
 		ComplexNumber * get_coefficients(void) const;
 
-		// Override
-		ComplexNumber eval(const ComplexNumber) const;
-
-		// Destructor.
-		~Polynomial(void);
+		ComplexNumber eval(const ComplexNumber) const override;
 
 		Polynomial operator =(const Polynomial &);
 
 		bool operator ==(const Polynomial &) const;
 
 		bool operator !=(const Polynomial &) const;
-};
 
-/**
- * Control how a polynomial is printed.
- */
-ostream& operator <<(ostream &, const Polynomial &);
+		void print_to_stream(ostream &) const override;
+};
 
 // Class representing functions of the form f(z) = z^a, for complex number a.
 class Power : public Function {
 	private:
+		ComplexNumber exponent;
 		ComplexNumber iPower(double) const;
 
 	public:
-		ComplexNumber exponent;
 
 		Power(ComplexNumber);
 
-		ComplexNumber get_exponent(void);
+		ComplexNumber get_exponent(void) const;
 
-		// Override.
-		ComplexNumber eval(const ComplexNumber) const;
+		ComplexNumber eval(const ComplexNumber) const override;
+
+		void print_to_stream(ostream &) const override;
 };
 
 class NthRoot : public Function {
@@ -63,10 +82,11 @@ class NthRoot : public Function {
 
 		NthRoot(int);
 
-		int get_n(void);
+		int get_n(void) const;
 
-		// Override.
-		ComplexNumber eval(const ComplexNumber) const;
+		ComplexNumber eval(const ComplexNumber) const override;
+
+		void print_to_stream(ostream &) const override;
 };
 
 // Exponential function and its inverse, the logarithm.
@@ -81,20 +101,16 @@ class Exponential : public Function {
 
 		ComplexNumber get_lambda(void) const ;
 
-		// Override.
-		ComplexNumber eval(const ComplexNumber) const;
+		ComplexNumber eval(const ComplexNumber) const override;
 
 		Exponential operator =(const Exponential &);
 
 		bool operator ==(const Exponential &) const;
 
 		bool operator !=(const Exponential &) const;
+		
+		void print_to_stream(ostream &) const override;
 };
-
-/**
- * Control how an exponential is printed.
- */
-ostream& operator <<(ostream &, const Exponential &);
 
 // Logarithms. Because the class represents the complex logarithm, which is multivalued, the principal log is taken.
 class Logarithm : public Function {
@@ -112,21 +128,16 @@ class Logarithm : public Function {
 
 		ComplexNumber get_base(void) const;
 
-		// Override.
-		ComplexNumber eval(const ComplexNumber) const;
+		ComplexNumber eval(const ComplexNumber) const override;
 
 		Logarithm operator =(const Logarithm &);
 
 		bool operator ==(const Logarithm &) const;
 
 		bool operator !=(const Logarithm &) const;
+		
+		void print_to_stream(ostream &) const override;
 };
-
-/**
- * Control how a logarithm is printed.
- */
-ostream& operator <<(ostream &stream, const Logarithm &);
-
 
 // Trig functions and their inverses.
 class Sine : public Function {
@@ -143,14 +154,10 @@ class Sine : public Function {
 
 		ComplexNumber getC(void) const;
 
-		// Override
-		ComplexNumber eval(const ComplexNumber) const;
+		ComplexNumber eval(const ComplexNumber) const override;
+		
+		void print_to_stream(ostream &) const override;
 };
-
-/**
- * Control how the sine function is printed.
- */
-ostream& operator <<(ostream &stream, const Sine &);
 
 class Cosine : public Function {
 	ComplexNumber a, b, c; // Represents a * cos(b * z + c)
@@ -167,12 +174,9 @@ class Cosine : public Function {
 		ComplexNumber getC(void) const;
 
 		ComplexNumber eval(const ComplexNumber) const;
+		
+		void print_to_stream(ostream &) const override;
 };
-
-/**
- * Control how the cosine function is printed.
- */
-ostream& operator <<(ostream &stream, const Cosine &);
 
 class Tangent : public Function {
 	ComplexNumber a, b, c; // Represents a * tan(b * z + c)
@@ -186,14 +190,10 @@ class Tangent : public Function {
 		
 		ComplexNumber getC(void) const;
 
-		// Override.
-		ComplexNumber eval(const ComplexNumber) const;
+		ComplexNumber eval(const ComplexNumber) const override;
+		
+		void print_to_stream(ostream &) const override;
 };
-
-/**
- * Control how the tangent function is printed.
- */
-ostream& operator <<(ostream &stream, const Tangent &);
 
 class Cosecant : public Function {
 

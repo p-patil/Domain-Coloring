@@ -5,6 +5,28 @@
 
 using namespace std;
 
+void Function::print_to_stream(ostream &stream) const {
+	stream << "MEOW";
+}
+
+// Base class << operator to allow for printing.
+ostream& operator <<(ostream &stream, const Function &f) {
+	f.print_to_stream(stream << "f(z) = ");
+	return stream;
+}
+
+// Begin constant class.
+
+Constant::Constant(const ComplexNumber z) { this->constant = z; }
+
+ComplexNumber Constant::get_constant(void) const { return this->constant; }
+
+ComplexNumber Constant::eval(const ComplexNumber z) const { return this->constant; }
+
+void Constant::print_to_stream(ostream &stream) const { stream << this->constant; }
+
+// End constant class.
+
 // Begin polynomial class.
 
 Polynomial::Polynomial(ComplexNumber coeffs[], int length) {
@@ -67,95 +89,89 @@ bool Polynomial::operator ==(const Polynomial &z) const {
 
 bool Polynomial::operator !=(const Polynomial &z) const { return !(*this == z); }
 
-/**
- * Control how a polynomial is printed.
- */
-ostream& operator <<(ostream &stream, const Polynomial &p) {
+void Polynomial::print_to_stream(ostream &stream) const {
 	ComplexNumber one (1, 0);
 	ComplexNumber minus_one (-1, 0);
 	ComplexNumber zero (0 ,0);
 
-	if (p.get_coefficients()[p.get_degree()] != zero) {
-		if (p.get_coefficients()[p.get_degree()] == one) {
-			stream << "z^" << p.get_degree();
-		} else if (p.get_coefficients()[p.get_degree()] == minus_one) {
-			stream << "-z^" << p.get_degree();
-		} else if (p.get_coefficients()[p.get_degree()].is_real()) {
-			stream << p.get_coefficients()[p.get_degree()].real() << "z^" << p.get_degree();
-		} else if (p.get_coefficients()[p.get_degree()].is_imaginary()) {
-			stream << p.get_coefficients()[p.get_degree()].imag() << "iz^" << p.get_degree();
+	if (this->coefficients[this->degree] != zero) {
+		if (this->coefficients[this->degree] == one) {
+			stream << "z^" << this->degree;
+		} else if (this->coefficients[this->degree] == minus_one) {
+			stream << "-z^" << this->degree;
+		} else if (this->coefficients[this->degree].is_real()) {
+			stream << this->coefficients[this->degree].real() << "z^" << this->degree;
+		} else if (this->coefficients[this->degree].is_imaginary()) {
+			stream << this->coefficients[this->degree].imag() << "iz^" << this->degree;
 		} else {
-			stream << "(" << p.get_coefficients()[p.get_degree()] << ")z^" << p.get_degree();
+			stream << "(" << this->coefficients[this->degree] << ")z^" << this->degree;
 		}
 	}
 
-	for (int n = p.get_degree() - 1; n > 1; n--) {
-		if (p.get_coefficients()[n] != zero) {	
-			if (p.get_coefficients()[n] == one) {
+	for (int n = this->degree - 1; n > 1; n--) {
+		if (this->coefficients[n] != zero) {	
+			if (this->coefficients[n] == one) {
 				stream << " + z^" << n;
-			} else if (p.get_coefficients()[n] == minus_one) {
+			} else if (this->coefficients[n] == minus_one) {
 				stream << " - z^" << n;
-			} else if (p.get_coefficients()[n].is_real()) {
-				if (p.get_coefficients()[n].real() > 0) {
-					stream << " + " << p.get_coefficients()[n].real() << "z^" << n;
+			} else if (this->coefficients[n].is_real()) {
+				if (this->coefficients[n].real() > 0) {
+					stream << " + " << this->coefficients[n].real() << "z^" << n;
 				} else {
-					stream << " - " << (-p.get_coefficients()[n].real()) << "z^" << n;					
+					stream << " - " << (-this->coefficients[n].real()) << "z^" << n;					
 				}
-			} else if (p.get_coefficients()[n].is_imaginary()) {
-				if (p.get_coefficients()[n].imag() > 0) {
-					stream << " + " << p.get_coefficients()[n].imag() << "iz^" << n;
+			} else if (this->coefficients[n].is_imaginary()) {
+				if (this->coefficients[n].imag() > 0) {
+					stream << " + " << this->coefficients[n].imag() << "iz^" << n;
 				} else {
-					stream << " - " << (-p.get_coefficients()[n].imag()) << "iz^" << n;
+					stream << " - " << (-this->coefficients[n].imag()) << "iz^" << n;
 				}
 			} else {
-				stream << " + (" << p.get_coefficients()[n] << ")z^" << n;
+				stream << " + (" << this->coefficients[n] << ")z^" << n;
 			}
 		}
 	}
 
 	// The cases n = 0, 1 require special formatting.
-	if (p.get_coefficients()[1] != zero) {
-		if (p.get_coefficients()[1] == one) {
+	if (this->coefficients[1] != zero) {
+		if (this->coefficients[1] == one) {
 			stream << " + z";
-		} else if (p.get_coefficients()[1] == minus_one) {
+		} else if (this->coefficients[1] == minus_one) {
 			stream << "- z";
-		} else if (p.get_coefficients()[1].is_real()) {
-			if (p.get_coefficients()[1].real() > 0) {
-				stream << " + " << p.get_coefficients()[1].real() << "z";
+		} else if (this->coefficients[1].is_real()) {
+			if (this->coefficients[1].real() > 0) {
+				stream << " + " << this->coefficients[1].real() << "z";
 			} else {
-				stream << " - " << (-p.get_coefficients()[1].real()) << "z";				
+				stream << " - " << (-this->coefficients[1].real()) << "z";				
 			}
-		} else if (p.get_coefficients()[1].is_imaginary()) {
-			if (p.get_coefficients()[1].imag() > 0) {
-				stream << " + " << p.get_coefficients()[1].imag() << "iz";
+		} else if (this->coefficients[1].is_imaginary()) {
+			if (this->coefficients[1].imag() > 0) {
+				stream << " + " << this->coefficients[1].imag() << "iz";
 			} else {
-				stream << " - " << (-p.get_coefficients()[1].imag()) << "iz";				
+				stream << " - " << (-this->coefficients[1].imag()) << "iz";				
 			}
 		} else {
-			stream << " + (" << p.get_coefficients()[1] << ")z";
+			stream << " + (" << this->coefficients[1] << ")z";
 		}
 	}
 
-	if (p.get_coefficients()[0] != zero) {
-		if (p.get_coefficients()[0].is_real()) {
-			if (p.get_coefficients()[0].real() > 0) {
-				stream << " + " << p.get_coefficients()[0].real();
+	if (this->coefficients[0] != zero) {
+		if (this->coefficients[0].is_real()) {
+			if (this->coefficients[0].real() > 0) {
+				stream << " + " << this->coefficients[0].real();
 			} else {
-				stream << " - " << (-p.get_coefficients()[0].real());				
+				stream << " - " << (-this->coefficients[0].real());				
 			}
-		} else if (p.get_coefficients()[0].is_imaginary()) {
-			if (p.get_coefficients()[0].imag() > 0) {
-				stream << " + " << p.get_coefficients()[0].imag() << "i";
+		} else if (this->coefficients[0].is_imaginary()) {
+			if (this->coefficients[0].imag() > 0) {
+				stream << " + " << this->coefficients[0].imag() << "i";
 			} else {
-				stream << " - " << (-p.get_coefficients()[0].imag()) << "i";				
+				stream << " - " << (-this->coefficients[0].imag()) << "i";				
 			}
 		} else {
-			stream << " + (" << p.get_coefficients()[0] << ")";
+			stream << " + (" << this->coefficients[0] << ")";
 		}
 	}
-
-
-	return stream;
 }
 
 // End polynomial class.
@@ -164,7 +180,7 @@ ostream& operator <<(ostream &stream, const Polynomial &p) {
 
 Power::Power(ComplexNumber exponent) { this->exponent = exponent; }
 
-ComplexNumber Power::get_exponent(void) { return exponent; }
+ComplexNumber Power::get_exponent(void) const { return exponent; }
 
 // Override.
 // (r * exp(i * theta))^(a + bi) = r^(a + bi) * exp(i * theta * a - theta * b)
@@ -189,13 +205,35 @@ ComplexNumber Power::iPower(double a) const {
 	return w;
 }
 
-// End extended polynomial class.
+void Power::print_to_stream(ostream &stream) const {
+	ComplexNumber zero (0, 0);
+	ComplexNumber one (1, 0);
+	
+	if (this->exponent == zero) {
+		stream << 1;
+	} else if (this->exponent == one) {
+		stream << "z";
+	} else {
+		stream << "z^";
+		if (this->exponent.is_real()) {
+			if (this->exponent.real() < 0) {
+				stream << "(" << this->exponent << ")";
+			} else {
+				stream << this->exponent;
+			}
+		} else {
+			stream << "(" << this->exponent << ")";
+		}
+	}
+}
 
-// Begin N-th root class.
+// End power class.
+
+// Begin n-th root class.
 
 NthRoot::NthRoot(int n) { this->n = n; }
 
-int NthRoot::get_n(void) { return n; }
+int NthRoot::get_n(void) const { return n; }
 
 // Override.
 ComplexNumber NthRoot::eval(const ComplexNumber z) const {
@@ -203,7 +241,20 @@ ComplexNumber NthRoot::eval(const ComplexNumber z) const {
 	return power.eval(z);
 }
 
-// End N-th root class.
+void NthRoot::print_to_stream(ostream &stream) const {
+	stream << "z";
+	if (this->n != 1) {
+		stream << "^(1 / ";
+
+		if (this->n < 0) {
+			stream << "(" << this->n << ")";
+		}
+
+		stream << ")";
+	}
+}
+
+// End n-th root class.
 
 // Begin exponential class.
 
@@ -241,33 +292,28 @@ bool Exponential::operator ==(const Exponential &z) const {
 
 bool Exponential::operator !=(const Exponential &z) const { return !(*this == z); }
 
-/**
- * Control how an exponential is printed.
- */
-ostream& operator <<(ostream &stream, const Exponential &exp) {
+void Exponential::print_to_stream(ostream &stream) const {
 	ComplexNumber one (1, 0);
 
-	if (exp.get_coefficient() != one) {
-		if (exp.get_coefficient().is_real() || exp.get_coefficient().is_imaginary()) {
-			stream << exp.get_coefficient();			
+	if (this->coefficient != one) {
+		if (this->coefficient.is_real() || this->coefficient.is_imaginary()) {
+			stream << this->coefficient;			
 		} else {
-			stream << "(" << exp.get_coefficient() << ")";
+			stream << "(" << this->coefficient << ")";
 		}
 	}
 
 	stream << "e^";
 
-	if (exp.get_lambda() != one) {
-		if (exp.get_coefficient().is_real() || exp.get_coefficient().is_imaginary()) {
-			stream << "(" << exp.get_lambda() << "z)";
+	if (this->lambda != one) {
+		if (this->coefficient.is_real() || this->coefficient.is_imaginary()) {
+			stream << "(" << this->lambda << "z)";
 		} else {
-			stream << "((" << exp.get_lambda() << ")z)";
+			stream << "((" << this->lambda << ")z)";
 		}
 	} else {
 		stream << "z";
 	}
-
-	return stream;
 }
 
 // End exponential class.
@@ -325,65 +371,60 @@ bool Logarithm::operator ==(const Logarithm &z) const {
 
 bool Logarithm::operator !=(const Logarithm &z) const { return !(*this == z); }
 
-/**
- * Controls how a logarithm is printed.
- */
-ostream& operator <<(ostream &stream, const Logarithm &logarithm) {
+void Logarithm::print_to_stream(ostream &stream) const {
 	ComplexNumber one (1, 0);
 	ComplexNumber minus_one (-1, 0);
 
-	if (logarithm.get_coefficient().is_real() || logarithm.get_coefficient().is_imaginary()) {
-		if (logarithm.get_coefficient() == minus_one) {
+	if (this->coefficient.is_real() || this->coefficient.is_imaginary()) {
+		if (this->coefficient == minus_one) {
 			stream << "-";
-		} else if (logarithm.get_coefficient() != one) {
-			stream << logarithm.get_coefficient() << " * ";
+		} else if (this->coefficient != one) {
+			stream << this->coefficient << " * ";
 		}
 	} else {
-		stream << "(" << logarithm.get_coefficient() << ") * ";
+		stream << "(" << this->coefficient << ") * ";
 	}
 	
-	if (logarithm.get_base() == exp(1)) {
+	if (this->base == exp(1)) {
 		stream << "ln(";
 	} else {
-		stream << "log_(" << logarithm.get_base() << ") (";
+		stream << "log_(" << this->base << ") (";
 	}
 
 	stream << "z";
 
-	if (logarithm.get_lambda().is_real()) {
-		if (logarithm.get_lambda().real() > 0) {
-			stream << " + " << logarithm.get_lambda().real() << ")";
-		} else if (logarithm.get_lambda().real() < 0) {
-			stream << " - " << (-logarithm.get_lambda().real()) << ")";
+	if (this->lambda.is_real()) {
+		if (this->lambda.real() > 0) {
+			stream << " + " << this->lambda.real() << ")";
+		} else if (this->lambda.real() < 0) {
+			stream << " - " << (-this->lambda.real()) << ")";
 		} else {
 			stream << ")";
 		}
-	} else if (logarithm.get_lambda().is_imaginary()) {
-		if (logarithm.get_lambda().imag() > 0) {
-			if (logarithm.get_lambda().imag() == 1) {
+	} else if (this->lambda.is_imaginary()) {
+		if (this->lambda.imag() > 0) {
+			if (this->lambda.imag() == 1) {
 				stream << " + i)";
 			} else {
-				stream << " + " << logarithm.get_lambda().imag() << "i)";
+				stream << " + " << this->lambda.imag() << "i)";
 			}
-		} else if (logarithm.get_lambda().imag() < 0) {
-			if (logarithm.get_lambda().imag() == -1) {
+		} else if (this->lambda.imag() < 0) {
+			if (this->lambda.imag() == -1) {
 				stream << " - i)";
 			} else {
-				stream << " - " << (-logarithm.get_lambda().imag()) << "i)";			
+				stream << " - " << (-this->lambda.imag()) << "i)";			
 			}
 		} else {
 			stream << ")";
 		}
 	} else {
-		if (logarithm.get_lambda().real() > 0) {
-			stream << " + " << logarithm.get_lambda() << ")";
-		} else if (logarithm.get_lambda().real() < 0) {
-			ComplexNumber new_lambda (-logarithm.get_lambda().real(), logarithm.get_lambda().imag());
+		if (this->lambda.real() > 0) {
+			stream << " + " << this->lambda << ")";
+		} else if (this->lambda.real() < 0) {
+			ComplexNumber new_lambda (-this->lambda.real(), this->lambda.imag());
 			stream << " - " << new_lambda << ")";
 		}
 	}
-
-	return stream;
 }
 
 // End logarithm class.
@@ -412,22 +453,16 @@ ComplexNumber Sine::eval(const ComplexNumber z) const {
 	return a * (e.eval(i * arg) - e.eval(-i * arg)) / (2 * i);
 }
 
-/**
- * Control how the sine function is printed.
- */
-/**
- * Control how the sine function is printed.
- */
-ostream& operator <<(ostream &stream, const Sine &s) {
-	if (s.getA() == 0 || (s.getB() == 0 && s.getC() == 0)) {
-		return stream << "0";
+void Sine::print_to_stream(ostream &stream) const {
+	if (this->a == 0 || (this->b == 0 && this->c == 0)) {
+		stream << "0";
 	}
 
-	if (s.getA() != 1) {
-		if (s.getA().real() == 0 || s.getA().imag() == 0) {
-			stream << s.getA();
+	if (this->a != 1) {
+		if (this->a.real() == 0 || this->a.imag() == 0) {
+			stream << this->a;
 		} else {
-			stream << "(" << s.getA() << ")";
+			stream << "(" << this->a << ")";
 		}
 
 		stream << " ";
@@ -435,35 +470,35 @@ ostream& operator <<(ostream &stream, const Sine &s) {
 
 	stream << "sin(";
 
-	if (s.getB() != 1) {
-		if (s.getB().real() == 0 || s.getB().imag() == 0) {
-			stream << s.getB();
+	if (this->b != 1) {
+		if (this->b.real() == 0 || this->b.imag() == 0) {
+			stream << this->b;
 		} else {
-			stream << "(" << s.getB() << ")";
+			stream << "(" << this->b << ")";
 		}
 	}
 
 	stream << "z";
 
-	if (s.getC() != 0) {
-		if (s.getC().is_real()) {
-			if (s.getC().real() < 0) {
-				stream << " - " << -s.getC().real();
+	if (this->c != 0) {
+		if (this->c.is_real()) {
+			if (this->c.real() < 0) {
+				stream << " - " << -this->c.real();
 			} else {
-				stream << " + " << s.getC().real();
+				stream << " + " << this->c.real();
 			}
-		} else if (s.getC().is_imaginary()) {
-			if (s.getC().imag() < 0) {
-				stream << " - " << -s.getC().imag();
+		} else if (this->c.is_imaginary()) {
+			if (this->c.imag() < 0) {
+				stream << " - " << -this->c.imag();
 			} else {
-				stream << " + " << s.getC().imag();
+				stream << " + " << this->c.imag();
 			}
 		} else {
-			stream << s.getC();
+			stream << this->c;
 		}
 	}
 
-	return stream << ")";
+	stream << ")";
 }
 
 // End sine class.
@@ -492,19 +527,16 @@ ComplexNumber Cosine::eval(const ComplexNumber z) const {
 	return a * (e.eval(i * arg) + e.eval(-i * arg)) / 2;
 }
 
-/**
- * Control how the cosine function is printed.
- */
-ostream& operator <<(ostream &stream, const Cosine &s) {
-	if (s.getA() == 0 || (s.getB() == 0 && s.getC() == 0)) {
-		return stream << "0";
+void Cosine::print_to_stream(ostream &stream) const {
+	if (this->a == 0 || (this->b == 0 && this->c == 0)) {
+		stream << "0";
 	}
 
-	if (s.getA() != 1) {
-		if (s.getA().real() == 0 || s.getA().imag() == 0) {
-			stream << s.getA();
+	if (this->a != 1) {
+		if (this->a.real() == 0 || this->a.imag() == 0) {
+			stream << this->a;
 		} else {
-			stream << "(" << s.getA() << ")";
+			stream << "(" << this->a << ")";
 		}
 
 		stream << " ";
@@ -512,38 +544,38 @@ ostream& operator <<(ostream &stream, const Cosine &s) {
 
 	stream << "cos(";
 
-	if (s.getB() != 1) {
-		if (s.getB().real() == 0 || s.getB().imag() == 0) {
-			stream << s.getB();
+	if (this->b != 1) {
+		if (this->b.real() == 0 || this->b.imag() == 0) {
+			stream << this->b;
 		} else {
-			stream << "(" << s.getB() << ")";
+			stream << "(" << this->b << ")";
 		}
 	}
 
 	stream << "z";
 
-	if (s.getC() != 0) {
-		if (s.getC().is_real()) {
-			if (s.getC().real() < 0) {
-				stream << " - " << -s.getC().real();
+	if (this->c != 0) {
+		if (this->c.is_real()) {
+			if (this->c.real() < 0) {
+				stream << " - " << -this->c.real();
 			} else {
-				stream << " + " << s.getC().real();
+				stream << " + " << this->c.real();
 			}
-		} else if (s.getC().is_imaginary()) {
-			if (s.getC().imag() < 0) {
-				stream << " - " << -s.getC().imag();
+		} else if (this->c.is_imaginary()) {
+			if (this->c.imag() < 0) {
+				stream << " - " << -this->c.imag();
 			} else {
-				stream << " + " << s.getC().imag();
+				stream << " + " << this->c.imag();
 			}
 		} else {
-			stream << s.getC();
+			stream << this->c;
 		}
 	}
 
-	return stream << ")";
+	stream << ")";
 }
 
-// End cosine class.
+// // End cosine class.
 
 // Begin tangent class.
 
@@ -566,19 +598,16 @@ ComplexNumber Tangent::eval(const ComplexNumber z) const {
 	return sine.eval(z) / cosine.eval(z);
 }
 
-/**
- * Control how the tangent function is printed.
- */
-ostream& operator <<(ostream &stream, const Tangent &s) {
-	if (s.getA() == 0 || (s.getB() == 0 && s.getC() == 0)) {
-		return stream << "0";
+void Tangent::print_to_stream(ostream &stream) const {
+	if (this->a == 0 || (this->b == 0 && this->c == 0)) {
+		stream << "0";
 	}
 
-	if (s.getA() != 1) {
-		if (s.getA().real() == 0 || s.getA().imag() == 0) {
-			stream << s.getA();
+	if (this->a != 1) {
+		if (this->a.real() == 0 || this->a.imag() == 0) {
+			stream << this->a;
 		} else {
-			stream << "(" << s.getA() << ")";
+			stream << "(" << this->a << ")";
 		}
 
 		stream << " ";
@@ -586,35 +615,35 @@ ostream& operator <<(ostream &stream, const Tangent &s) {
 
 	stream << "tan(";
 
-	if (s.getB() != 1) {
-		if (s.getB().real() == 0 || s.getB().imag() == 0) {
-			stream << s.getB();
+	if (this->b != 1) {
+		if (this->b.real() == 0 || this->b.imag() == 0) {
+			stream << this->b;
 		} else {
-			stream << "(" << s.getB() << ")";
+			stream << "(" << this->b << ")";
 		}
 	}
 
 	stream << "z";
 
-	if (s.getC() != 0) {
-		if (s.getC().is_real()) {
-			if (s.getC().real() < 0) {
-				stream << " - " << -s.getC().real();
+	if (this->c != 0) {
+		if (this->c.is_real()) {
+			if (this->c.real() < 0) {
+				stream << " - " << -this->c.real();
 			} else {
-				stream << " + " << s.getC().real();
+				stream << " + " << this->c.real();
 			}
-		} else if (s.getC().is_imaginary()) {
-			if (s.getC().imag() < 0) {
-				stream << " - " << -s.getC().imag();
+		} else if (this->c.is_imaginary()) {
+			if (this->c.imag() < 0) {
+				stream << " - " << -this->c.imag();
 			} else {
-				stream << " + " << s.getC().imag();
+				stream << " + " << this->c.imag();
 			}
 		} else {
-			stream << s.getC();
+			stream << this->c;
 		}
 	}
 
-	return stream << ")";
+	stream << ")";
 }
 
 // End tangent class.
