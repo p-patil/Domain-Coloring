@@ -43,7 +43,7 @@ ostream& operator <<(ostream &, const RGBPixel &);
 
 SDL_Surface * random_image(int, int, int);
 
-SDL_Surface * map_function_to_pixels(int, int, int, double, double, double, double, ComplexNumber (*)(ComplexNumber));
+SDL_Surface * map_function_to_pixels(int, int, int, double, double, double, double, function<ComplexNumber(ComplexNumber)>);
 
 void display_image(SDL_Surface *, long);
 

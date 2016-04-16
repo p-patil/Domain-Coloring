@@ -1,4 +1,3 @@
-#include <iostream>
 #include <cmath>
 #include "functions.h"
 #include "complex_numbers.h"

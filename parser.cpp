@@ -1,11 +1,5 @@
-#include <iostream>
-#include <string>
 #include <algorithm>
-#include <stdexcept>
 #include <sstream>
-#include <vector>
-#include <stack>
-#include <utility>
 #include "parser.h"
 #include "complex_numbers.h"
 #include "functions.h"
@@ -15,16 +9,6 @@ using namespace std;
 // Begin parent expression tree node class.
 
 ExpressionTreeNode::ExpressionTreeNode() {}
-
-bool ExpressionTreeNode::is_leaf_node(void) const { return false; }
-
-bool ExpressionTreeNode::is_op_node(void) const { return false; }
-
-bool ExpressionTreeNode::is_func_node(void) const { return false; }
-
-bool ExpressionTreeNode::is_var_node(void) const { return false; }
-
-bool ExpressionTreeNode::is_const_node(void) const { return false; }
 
 // End parent expression tree node class.
 
@@ -57,8 +41,15 @@ void ExpressionTreeBinaryOp::set_left(ExpressionTreeNode *l) { this->left = l; }
 
 void ExpressionTreeBinaryOp::set_right(ExpressionTreeNode *r) { this->right = r; }
 
-// Override
+bool ExpressionTreeBinaryOp::is_leaf_node(void) const { return false; }
+
 bool ExpressionTreeBinaryOp::is_op_node(void) const { return true; }
+
+bool ExpressionTreeBinaryOp::is_func_node(void) const { return false; }
+
+bool ExpressionTreeBinaryOp::is_var_node(void) const { return false; }
+
+bool ExpressionTreeBinaryOp::is_const_node(void) const { return false; }
 
 // End parent expression tree node class.
 
@@ -85,8 +76,15 @@ void ExpressionTreeFunction::set_argument(ExpressionTreeNode *a) { this->argumen
 
 void ExpressionTreeFunction::set_function(const string f) { this->function = f; }
 
-// Override
+bool ExpressionTreeFunction::is_leaf_node(void) const { return false; }
+
+bool ExpressionTreeFunction::is_op_node(void) const { return false; }
+
 bool ExpressionTreeFunction::is_func_node(void) const { return true; }
+
+bool ExpressionTreeFunction::is_var_node(void) const { return false; }
+
+bool ExpressionTreeFunction::is_const_node(void) const { return false; }
 
 // End parent expression tree node class.
 
@@ -102,8 +100,15 @@ ComplexNumber ExpressionTreeLeaf::get_val(void) { return this->val; }
 
 void ExpressionTreeLeaf::set_val(ComplexNumber v) { this->val = v; }
 
-// Override
 bool ExpressionTreeLeaf::is_leaf_node(void) const { return true; }
+
+bool ExpressionTreeLeaf::is_op_node(void) const { return false; }
+
+bool ExpressionTreeLeaf::is_func_node(void) const { return false; }
+
+bool ExpressionTreeLeaf::is_var_node(void) const { return false; }
+
+bool ExpressionTreeLeaf::is_const_node(void) const { return false; }
 
 // End parent expression tree node class.
 
@@ -121,6 +126,14 @@ string ExpressionTreeConstant::get_constant(void) const { return this->constant;
 
 void ExpressionTreeConstant::set_constant(const string c) { this->constant = c; }
 
+bool ExpressionTreeConstant::is_leaf_node(void) const { return false; }
+
+bool ExpressionTreeConstant::is_op_node(void) const { return false; }
+
+bool ExpressionTreeConstant::is_func_node(void) const { return false; }
+
+bool ExpressionTreeConstant::is_var_node(void) const { return false; }
+
 bool ExpressionTreeConstant::is_const_node(void) const { return true; }
 
 // End constant expression tree class.
@@ -129,22 +142,82 @@ bool ExpressionTreeConstant::is_const_node(void) const { return true; }
 
 ExpressionTreeVariable::ExpressionTreeVariable(void) {}
 
-// Override
+bool ExpressionTreeVariable::is_leaf_node(void) const { return false; }
+
+bool ExpressionTreeVariable::is_op_node(void) const { return false; }
+
+bool ExpressionTreeVariable::is_func_node(void) const { return false; }
+
 bool ExpressionTreeVariable::is_var_node(void) const { return true; }
+
+bool ExpressionTreeVariable::is_const_node(void) const { return false; }
 
 // End var expression tree node class.
 
-// Returns a list of elementary functions, interpreted as a left-to-right function composition, which, when evaluated, is
-// equivalent to the given expression tree.
-vector<Function *> to_elementary_composition(ExpressionTreeNode *root) {
-	vector<Function *> composition;
-	to_elementary_composition_helper(root, composition);
-	return composition;
+// TODO: Expand to allow for more functions.
+// TODO: When parsing e^(f(z)), use Exponential class instead of Power class.
+// Evaluates the given expression tree on the given variable value.
+ComplexNumber evaluate_tree(const ExpressionTreeNode *root, const ComplexNumber z) {
+	if (root->is_op_node()) {
+		ExpressionTreeBinaryOp *temp = (ExpressionTreeBinaryOp *) root;
+		ComplexNumber left = evaluate_tree(temp->get_left(), z);
+		ComplexNumber right = evaluate_tree(temp->get_right(), z);
+
+		// Find the appropriate operator, apply, then return.
+		if (temp->get_operator() == PLUS) {
+			return left + right;
+		} else if (temp->get_operator() == MINUS) {
+			return left - right;
+		} else if (temp->get_operator() == TIMES) {
+			return left * right;
+		} else if (temp->get_operator() == DIVIDE) {
+			return left / right;
+		} else { // temp->get_operator() == EXP
+			Power p (right);
+			return p.eval(left);
+		}
+	} else if (root->is_func_node()) {
+		ExpressionTreeFunction *temp = (ExpressionTreeFunction *) root;
+		ComplexNumber arg = evaluate_tree(temp->get_argument(), z);
+
+		// Find the appropriate function, evaluate, then return.
+		if (temp->get_function() == LOG) {
+			Logarithm l (1, 0);
+			return l.eval(arg);
+		} else if (temp->get_function() == SIN) {
+			Sine s (1, 1, 0);
+			return s.eval(arg);
+		} else if (temp->get_function() == COS) {
+			Cosine c (1, 1, 0);
+			return c.eval(arg);
+		} else { // temp->get_function() == TAN
+			Tangent t (1, 1, 0);
+			return t.eval(arg);
+		}
+	} else if (root->is_leaf_node()) {
+		ExpressionTreeLeaf *temp = (ExpressionTreeLeaf *) root;
+		return temp->get_val(); // Return the value itself
+	} else if (root->is_const_node()) {
+		ExpressionTreeConstant *temp = (ExpressionTreeConstant *) root;
+
+		// Return the corresponding mathematical constant
+		if (temp->get_constant() == e) {
+			return E;
+		} else if (temp->get_constant() == pi) {
+			return PI;
+		} else { // temp->get_constant() == phi
+			return PHI;
+		}
+	} else { // root->is_var_node()
+		return z;
+	}
 }
 
+// TODO: Allow for logarithms with arbitrary bases, by parsing for '_' character after 'log' token.
 // Primary function that parses the given mathematical expression. Assumes the expression is a single-variable with symbol 'z'.
 ExpressionTreeNode * parse(string expr) { return parse_helper(tokenize_shallow(remove_whitespace(expr))); }
 
+// TODO: Write this function
 // Simplifies the given expression tree as much as possible using standard rules of algebra. "Simplifying" in this context means
 // returning an equivalent expression tree that is as small (in the number of nodes) as possible.
 ExpressionTreeNode * simplify(ExpressionTreeNode *root) {
@@ -152,20 +225,6 @@ ExpressionTreeNode * simplify(ExpressionTreeNode *root) {
 }
 
 // HELPER FUNCTIONS
-
-void to_elementary_composition_helper(ExpressionTreeNode *root, vector<Function *> composition) {
-	if (root->is_op_node()) {
-		
-	} else if (root->is_func_node()) {
-
-	} else if (root->is_leaf_node()) {
-
-	} else if (root->is_var_node()) {
-
-	} else { // root->is_const_node()
-
-	}
-}
 
 ExpressionTreeNode * parse_helper(vector<string> shallow_tokens) {
 	if (shallow_tokens.size() == 1 && is_base_expression(shallow_tokens[0])) {

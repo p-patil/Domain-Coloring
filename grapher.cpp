@@ -1,9 +1,7 @@
-#include <iostream>
-#include <stdexcept>
 #include <SDL/SDL.h>
-#include <cstdlib>
+#include <iostream>
 #include <limits>
-#include <cmath>
+#include <functional>
 
 #include "grapher.h"
 #include "complex_numbers.h"
@@ -105,9 +103,10 @@ SDL_Surface * random_image(int width, int height, int bpp) {
 	return image;
 }
 
+// TODO: Make this function compatible with GPUs using CUDA (dramatically speeds up computation)
 // Primary function that returns a surface which displays the graph of the given complex function in the given bounds. w_scale is the number of pixels 
 // per unit on the real axis, h_scale is the number of pixels per unit on the imaginary axis.
-SDL_Surface * map_function_to_pixels(int width, int height, int bpp, double x_min, double x_max, double y_min, double y_max, ComplexNumber (*f)(ComplexNumber)) {
+SDL_Surface * map_function_to_pixels(int width, int height, int bpp, double x_min, double x_max, double y_min, double y_max, function<ComplexNumber(ComplexNumber)> f) {
 	// Create the surface to return, initially empty.
 	int blue_mask = ~((-1) << bpp); // Blue mask
 	int green_mask = blue_mask << bpp; // Green mask

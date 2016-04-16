@@ -227,6 +227,10 @@ class Arcsecant : public Function {
 
 };
 
+class Arccotangent : public Function {
+
+};
+
 class HyperbolicSine : public Function {
 
 };

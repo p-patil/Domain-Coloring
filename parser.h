@@ -1,7 +1,4 @@
-#include <string>
-#include <vector>
 #include <unordered_set>
-#include <set>
 #include "complex_numbers.h"
 #include "functions.h"
 
@@ -14,31 +11,56 @@ const string MINUS = "-";
 const string TIMES = "*";
 const string DIVIDE = "/";
 const string EXP = "^";
+
 const string LOG = "log";
 const string SIN = "sin";
 const string COS = "cos";
 const string TAN = "tan";
+const string CSC = "csc";
+const string SEC = "sec";
+const string COT = "cot";
+const string ARCSIN = "arcsin";
+const string ARCCOS = "arccos";
+const string ARCTAN = "arctan";
+const string ARCCSC = "arccsc";
+const string ARCSEC = "arcsec";
+const string ARCCOT = "arccot";
+const string SINH = "sinh";
+const string COSH = "cosh";
+const string TANH = "tanh";
+const string CSCH = "csch";
+const string SECH = "sech";
+const string COTH = "coth";
+const string ARCSINH = "arcsinh";
+const string ARCCOSH = "arccosh";
+const string ARCTANH = "arctanh";
+const string ARCCSCH = "arccsch";
+const string ARCSECH = "arcsech";
+const string ARCCOTH = "arccoth";
+
 const string e = "e";
 const string pi = "pi";
 const string phi = "phi";
 
 const vector<string> OPERATORS = {PLUS, MINUS, TIMES, DIVIDE, EXP}; // Set of operators, ordered (ascending) by precedence
-const unordered_set<string> FUNCTIONS = {LOG, SIN, COS, TAN};
+const unordered_set<string> FUNCTIONS = {LOG, SIN, COS, TAN, CSC, SEC, COT, ARCSIN, ARCCOS, ARCTAN, ARCCSC, ARCSEC, 
+									 	 ARCCOT, SINH, COSH, TANH, CSCH, TANH, CSCH, SECH, COTH, ARCSINH, ARCCOSH, 
+									 	 ARCTANH, ARCCSCH, ARCSECH, ARCCOTH};
 const unordered_set<string> CONSTANTS = {e, pi, phi};
 
 class ExpressionTreeNode {
 	public:
 		ExpressionTreeNode(void);
 
-		bool is_op_node(void) const;
+		virtual bool is_op_node(void) const = 0;
 
-		bool is_func_node(void) const;
+		virtual bool is_func_node(void) const = 0;
 
-		bool is_leaf_node(void) const;
+		virtual bool is_leaf_node(void) const = 0;
 
-		bool is_var_node(void) const;
+		virtual bool is_var_node(void) const = 0;
 
-		bool is_const_node(void) const;
+		virtual bool is_const_node(void) const = 0;
 };
 
 class ExpressionTreeBinaryOp : public ExpressionTreeNode {
@@ -66,7 +88,15 @@ class ExpressionTreeBinaryOp : public ExpressionTreeNode {
 
 		void set_right(ExpressionTreeNode *);
 
-		bool is_op_node(void) const;
+		virtual bool is_op_node(void) const override;
+
+		virtual bool is_func_node(void) const override;
+
+		virtual bool is_leaf_node(void) const override;
+
+		virtual bool is_var_node(void) const override;
+
+		virtual bool is_const_node(void) const override;
 };
 
 class ExpressionTreeFunction : public ExpressionTreeNode {
@@ -92,7 +122,15 @@ class ExpressionTreeFunction : public ExpressionTreeNode {
 
 		void set_function(const string);
 
-		bool is_func_node(void) const;
+		virtual bool is_op_node(void) const override;
+
+		virtual bool is_func_node(void) const override;
+
+		virtual bool is_leaf_node(void) const override;
+
+		virtual bool is_var_node(void) const override;
+
+		virtual bool is_const_node(void) const override;
 };
 
 class ExpressionTreeLeaf : public ExpressionTreeNode {
@@ -109,7 +147,15 @@ class ExpressionTreeLeaf : public ExpressionTreeNode {
 
 		void set_val(ComplexNumber);
 
-		bool is_leaf_node(void) const;
+		virtual bool is_op_node(void) const override;
+
+		virtual bool is_func_node(void) const override;
+
+		virtual bool is_leaf_node(void) const override;
+
+		virtual bool is_var_node(void) const override;
+
+		virtual bool is_const_node(void) const override;
 };
 
 class ExpressionTreeConstant : public ExpressionTreeNode {
@@ -122,25 +168,39 @@ class ExpressionTreeConstant : public ExpressionTreeNode {
 
 		void set_constant(const string);
 
-		bool is_const_node(void) const;
+		virtual bool is_op_node(void) const override;
+
+		virtual bool is_func_node(void) const override;
+
+		virtual bool is_leaf_node(void) const override;
+
+		virtual bool is_var_node(void) const override;
+
+		virtual bool is_const_node(void) const override;
 };
 
 class ExpressionTreeVariable : public ExpressionTreeNode {
 	public:
 		ExpressionTreeVariable(void);
 
-		bool is_var_node(void) const;
+		virtual bool is_op_node(void) const override;
+
+		virtual bool is_func_node(void) const override;
+
+		virtual bool is_leaf_node(void) const override;
+
+		virtual bool is_var_node(void) const override;
+
+		virtual bool is_const_node(void) const override;
 };
 
-vector<Function *> to_elementary_composition(ExpressionTreeNode *);
+ComplexNumber evaluate_tree(const ExpressionTreeNode *, const ComplexNumber);
 
 ExpressionTreeNode * parse(string);
 
 ExpressionTreeNode * simplify(ExpressionTreeNode *);
 
 // HELPER FUNCTIONS
-
-void to_elementary_composition_helper(ExpressionTreeNode *, vector<Function *>);
 
 ExpressionTreeNode * parse_helper(vector<string>);
 

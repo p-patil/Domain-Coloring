@@ -1,14 +1,24 @@
 #include <cmath>
-#include <stdexcept>
 #include <iostream>
-#include <exception>
 #include "complex_numbers.h"
 
 using namespace std;
 
 ComplexNumber::ComplexNumber() {};
 
-ComplexNumber::ComplexNumber(double real, double imag) : re(real), im(imag) { initialize_polar(real, imag); }
+ComplexNumber::ComplexNumber(double real, double imag) : re(real), im(imag) {
+	double error_bound = 1.0e-15;
+	
+	if (abs(re) < error_bound) {
+		re = 0;
+	}
+
+	if (abs(im) < error_bound) {
+		im = 0;
+	}
+
+	initialize_polar(real, imag); 
+}
 
 ComplexNumber::ComplexNumber(double x) : re(x), im(0) {
 	r = abs(x);

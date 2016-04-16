@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <functional>
 #include "complex_numbers.h"
 #include "functions.h"
 #include "grapher.h"
@@ -7,24 +8,9 @@
 #include "SDL/SDL.h"
 
 using namespace std;
+using namespace std::placeholders;
 
-ComplexNumber identity(ComplexNumber z) { return z; }
-
-ComplexNumber square(ComplexNumber z) { return z * z; }
-
-ComplexNumber exponential(ComplexNumber z) {
-	Exponential exp (1, 1);
-	return exp.eval(z);
-}
-
-ComplexNumber inverse(ComplexNumber z) { return 1 / z; }
-
-ComplexNumber sine(ComplexNumber z) {
-	Sine s (1, 1, 0);
-	return s.eval(z);
-}
-
-ComplexNumber polynomial(ComplexNumber z) { return (z * z * z - 1) * (z - 1); }
+SDL_Surface * graph(const string, double = -3, double = 3, double = -3, double = 3); // Default range is -3 <= x, y <= 3
 
 int main(int argc, char **argv) {
 	freopen("CON", "w", stdout); // Prevents redirect of output
@@ -34,34 +20,28 @@ int main(int argc, char **argv) {
 		return -1;
 	}
 
-	// ExpressionTreeBinaryOp *expr = (ExpressionTreeBinaryOp *) parse("log(5 * z) + e^10");
-	// cout << expr->get_operator() << endl; // expect +
-	// cout << ((ExpressionTreeFunction *) expr->get_left())->get_function() << endl; // expect sin
-	// cout << ((ExpressionTreeBinaryOp *) ((ExpressionTreeFunction *) expr->get_left())->get_argument())->get_operator() << endl; // expect *
-	// cout << ((ExpressionTreeLeaf *) ((ExpressionTreeBinaryOp *) ((ExpressionTreeFunction *) expr->get_left())->get_argument())->get_left())->get_val() << endl; // expect 5
-	// cout << ((ExpressionTreeVariable *) ((ExpressionTreeBinaryOp *) ((ExpressionTreeFunction *) expr->get_left())->get_argument())->get_right())->is_var_node() << endl; // expect 1 (true)
-	// cout << ((ExpressionTreeBinaryOp *) expr->get_right())->get_operator() << endl; // expect ^
-	// cout << ((ExpressionTreeConstant *) ((ExpressionTreeBinaryOp *) expr->get_right())->get_left())->get_constant() << endl; // expect e
-	// cout << ((ExpressionTreeLeaf *) ((ExpressionTreeBinaryOp *) expr->get_right())->get_right())->get_val() << endl; // expect 10
-	// delete expr;
+	bool flag = true;
+	while (flag) {
+		try {
+			flag = false;
+			string expr;
+			cout << "Enter an expression: ";
+			cin >> expr;
 
-	vector<Function *> arr;
-	
-	ComplexNumber z (1, 1);
-	Constant c (z);
-	arr.push_back(&c);
-
-	Exponential expo (1, 1);
-	arr.push_back(&expo);
-
-	Logarithm loga (1, 0);
-	arr.push_back(&loga);
-
-
-	for (int i = 0; i < 3; i++) {
-		cout << *(arr[i]) << endl;
+			SDL_Surface *image = graph(expr); // Get the graph, as a surface.
+			display_image(image, 2000); // Display for 5000 milliseconds
+		} catch (const exception &e) {
+			flag = true;
+			cout << "Invalid expression. ";
+		}
 	}
 
 	SDL_Quit();
 	return 0;
+}
+
+SDL_Surface * graph(const string s, double x_min, double x_max, double y_min, double y_max) {
+	ExpressionTreeNode *expr_tree = parse(s);
+	function<ComplexNumber(ComplexNumber)> f = bind(evaluate_tree, expr_tree, _1);
+	return map_function_to_pixels(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP, x_min, x_max, y_min, y_max, f);
 }
