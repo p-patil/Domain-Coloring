@@ -1,2 +1,2 @@
 all:
-	g++ *.cpp -lmingw32 -lSDLmain -lSDL -fopenmp -std=c++11
+	g++ -o main.exe *.cpp -lmingw32 -lSDLmain -lSDL -fopenmp -std=c++11
