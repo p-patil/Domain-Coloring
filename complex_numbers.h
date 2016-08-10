@@ -9,99 +9,99 @@
 using namespace std;
 
 class ComplexNumber {
-	double re, im; // Real and imaginary components.
-	double r, theta; // Corresponding polar coordinates.
+    double re, im; // Real and imaginary components.
+    double r, theta; // Corresponding polar coordinates.
 
-	private:
-		void initialize_polar(double, double);
+    private:
+        void initialize_polar(double, double);
 
-	public:
-		ComplexNumber();
+    public:
+        ComplexNumber();
 
-		ComplexNumber(double, double);
+        ComplexNumber(double, double);
 
-		/**
-		 * Constructor used to implicitly promote double to ComplexNumber.
-		 */
-		ComplexNumber(double);
+        /**
+         * Constructor used to implicitly promote double to ComplexNumber.
+         */
+        ComplexNumber(double);
 
-		/**
-		 * Returns real part this complex number.
-		 */
-		double real(void) const;
+        /**
+         * Returns real part this complex number.
+         */
+        double real(void) const;
 
-		/**
-		 * Returns the imaginary part of this complex number.
-		 */
-		double imag(void) const;
+        /**
+         * Returns the imaginary part of this complex number.
+         */
+        double imag(void) const;
 
-		/**
-		 * Magnitude of the complex number.
-		 */
-		double mag(void) const;
+        /**
+         * Magnitude of the complex number.
+         */
+        double mag(void) const;
 
-		/**
-		 * Polar angle of the complex number, in radians.
-		 */		 
-		double angle(void) const;
+        /**
+         * Polar angle of the complex number, in radians.
+         */         
+        double angle(void) const;
 
-		/**
-		 * Complex conjugate.
-		 */
-		ComplexNumber conjugate(void) const;
+        /**
+         * Complex conjugate.
+         */
+        ComplexNumber conjugate(void) const;
 
-		bool is_real(void) const;
+        bool is_real(void) const;
 
-		bool is_imaginary(void) const;
+        bool is_imaginary(void) const;
 
-		void set(double, double);
+        void set(double, double);
 
-		/**
-		 * Assignment operator.
-		 */
-		ComplexNumber operator =(const ComplexNumber &);
+        /**
+         * Assignment operator.
+         */
+        ComplexNumber operator =(const ComplexNumber &);
 
-		bool operator ==(const ComplexNumber &) const;
+        bool operator ==(const ComplexNumber &) const;
 
-		bool operator !=(const ComplexNumber &) const;
+        bool operator !=(const ComplexNumber &) const;
 
-		/**
-		 * Complex addition.
-		 */
-		ComplexNumber operator +(const ComplexNumber &) const;
+        /**
+         * Complex addition.
+         */
+        ComplexNumber operator +(const ComplexNumber &) const;
 
-		friend ComplexNumber operator +(double, const ComplexNumber &);
+        friend ComplexNumber operator +(double, const ComplexNumber &);
 
-		/** 
-		 * Comlex subtraction.
-		 */
-		ComplexNumber operator -(const ComplexNumber &) const;
-		
-		friend ComplexNumber operator -(double, const ComplexNumber &);
+        /** 
+         * Comlex subtraction.
+         */
+        ComplexNumber operator -(const ComplexNumber &) const;
+        
+        friend ComplexNumber operator -(double, const ComplexNumber &);
 
-		/**
-		 * Complex multiplication.
-		 */
-		ComplexNumber operator *(const ComplexNumber &) const;
+        /**
+         * Complex multiplication.
+         */
+        ComplexNumber operator *(const ComplexNumber &) const;
 
-		friend ComplexNumber operator *(double, const ComplexNumber &);
+        friend ComplexNumber operator *(double, const ComplexNumber &);
 
-		/**
-		 * Complex division.
-		 */
-		ComplexNumber operator /(const ComplexNumber &) const;
+        /**
+         * Complex division.
+         */
+        ComplexNumber operator /(const ComplexNumber &) const;
 
-		friend ComplexNumber operator /(double, const ComplexNumber &);
+        friend ComplexNumber operator /(double, const ComplexNumber &);
 
-		ComplexNumber operator -() const;
+        ComplexNumber operator -() const;
 
-		ComplexNumber operator +=(const ComplexNumber &);
+        ComplexNumber operator +=(const ComplexNumber &);
 
-		ComplexNumber operator -=(const ComplexNumber &);
+        ComplexNumber operator -=(const ComplexNumber &);
 
-		ComplexNumber operator *=(const ComplexNumber &);
+        ComplexNumber operator *=(const ComplexNumber &);
 
-		ComplexNumber operator /=(const ComplexNumber &);
+        ComplexNumber operator /=(const ComplexNumber &);
 };
 
 /**
@@ -111,8 +111,8 @@ ostream& operator <<(ostream &, const ComplexNumber &);
 
 // Division by zero exception class, so that the poles of complex functions can be found by catching this exception.
 class ComplexDivisionByZeroException : public exception {
-	public:
-		const char * what() const throw();
+    public:
+        const char * what() const throw();
 };
 
 #endif

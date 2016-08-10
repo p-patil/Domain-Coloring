@@ -13,29 +13,29 @@
 using namespace std;
 
 class RGBPixel {
-	int bits_per_pixel;
-	int red, green, blue;
+    int bits_per_pixel;
+    int red, green, blue;
 
-	public:
-		RGBPixel(int, int, int, int);
+    public:
+        RGBPixel(int, int, int, int);
 
-		RGBPixel(int, int);
+        RGBPixel(int, int);
 
-		int get_bpp(void) const;
+        int get_bpp(void) const;
 
-		int get_red(void) const;
+        int get_red(void) const;
 
-		int get_green(void) const;
+        int get_green(void) const;
 
-		int get_blue(void) const;
+        int get_blue(void) const;
 
-		void set_red(int red);
+        void set_red(int red);
 
-		void set_green(int green);
+        void set_green(int green);
 
-		void set_blue(int blue);
+        void set_blue(int blue);
 
-		int as_int(void) const;
+        int as_int(void) const;
 
 };
 

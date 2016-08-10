@@ -7,192 +7,192 @@
 using namespace std;
 
 class Function {
-	protected:
-		// Virtual function used to allow for polymorphic overload of << operator.
-		virtual void print_to_stream(ostream &) const;
+    protected:
+        // Virtual function used to allow for polymorphic overload of << operator.
+        virtual void print_to_stream(ostream &) const;
 
-	public:
-		virtual ComplexNumber eval(const ComplexNumber) const = 0;
-	
-	friend ostream& operator <<(ostream &, const Function &);
+    public:
+        virtual ComplexNumber eval(const ComplexNumber) const = 0;
+    
+    friend ostream& operator <<(ostream &, const Function &);
 
 };
 
 ostream& operator <<(ostream &, const Function &);
 
 class Constant : public Function {
-	ComplexNumber constant;
+    ComplexNumber constant;
 
-	public:
-		Constant(const ComplexNumber);
+    public:
+        Constant(const ComplexNumber);
 
-		ComplexNumber get_constant(void) const;
+        ComplexNumber get_constant(void) const;
 
-		ComplexNumber eval(const ComplexNumber) const override;
+        ComplexNumber eval(const ComplexNumber) const override;
 
-		void print_to_stream(ostream &) const override;
+        void print_to_stream(ostream &) const override;
 };
 
 // Polynomials.
 class Polynomial : public Function {
-	int degree;
-	ComplexNumber *coefficients; // Index n corresponds to coefficient of x^n
+    int degree;
+    ComplexNumber *coefficients; // Index n corresponds to coefficient of x^n
 
-	public:
-		Polynomial(ComplexNumber[], int);
+    public:
+        Polynomial(ComplexNumber[], int);
 
-		// Destructor.
-		~Polynomial(void);
-		
-		int get_degree(void) const;
+        // Destructor.
+        ~Polynomial(void);
+        
+        int get_degree(void) const;
 
-		ComplexNumber * get_coefficients(void) const;
+        ComplexNumber * get_coefficients(void) const;
 
-		ComplexNumber eval(const ComplexNumber) const override;
+        ComplexNumber eval(const ComplexNumber) const override;
 
-		Polynomial operator =(const Polynomial &);
+        Polynomial operator =(const Polynomial &);
 
-		bool operator ==(const Polynomial &) const;
+        bool operator ==(const Polynomial &) const;
 
-		bool operator !=(const Polynomial &) const;
+        bool operator !=(const Polynomial &) const;
 
-		void print_to_stream(ostream &) const override;
+        void print_to_stream(ostream &) const override;
 };
 
 // Class representing functions of the form f(z) = z^a, for complex number a.
 class Power : public Function {
-	private:
-		ComplexNumber exponent;
-		ComplexNumber iPower(double) const;
+    private:
+        ComplexNumber exponent;
+        ComplexNumber iPower(double) const;
 
-	public:
+    public:
 
-		Power(ComplexNumber);
+        Power(ComplexNumber);
 
-		ComplexNumber get_exponent(void) const;
+        ComplexNumber get_exponent(void) const;
 
-		ComplexNumber eval(const ComplexNumber) const override;
+        ComplexNumber eval(const ComplexNumber) const override;
 
-		void print_to_stream(ostream &) const override;
+        void print_to_stream(ostream &) const override;
 };
 
 class NthRoot : public Function {
-	public:
-		int n;
+    public:
+        int n;
 
-		NthRoot(int);
+        NthRoot(int);
 
-		int get_n(void) const;
+        int get_n(void) const;
 
-		ComplexNumber eval(const ComplexNumber) const override;
+        ComplexNumber eval(const ComplexNumber) const override;
 
-		void print_to_stream(ostream &) const override;
+        void print_to_stream(ostream &) const override;
 };
 
 // Exponential function and its inverse, the logarithm.
 class Exponential : public Function {
-	// Models the function f(z) = coefficient * e^(lambda * z)
-	ComplexNumber coefficient, lambda;
+    // Models the function f(z) = coefficient * e^(lambda * z)
+    ComplexNumber coefficient, lambda;
 
-	public:
-		Exponential(ComplexNumber, ComplexNumber);
+    public:
+        Exponential(ComplexNumber, ComplexNumber);
 
-		ComplexNumber get_coefficient(void) const;
+        ComplexNumber get_coefficient(void) const;
 
-		ComplexNumber get_lambda(void) const ;
+        ComplexNumber get_lambda(void) const ;
 
-		ComplexNumber eval(const ComplexNumber) const override;
+        ComplexNumber eval(const ComplexNumber) const override;
 
-		Exponential operator =(const Exponential &);
+        Exponential operator =(const Exponential &);
 
-		bool operator ==(const Exponential &) const;
+        bool operator ==(const Exponential &) const;
 
-		bool operator !=(const Exponential &) const;
-		
-		void print_to_stream(ostream &) const override;
+        bool operator !=(const Exponential &) const;
+        
+        void print_to_stream(ostream &) const override;
 };
 
 // Logarithms. Because the class represents the complex logarithm, which is multivalued, the principal log is taken.
 class Logarithm : public Function {
-	ComplexNumber base, coefficient, lambda; // Represents coefficient * log_(base) (z + lambda)
+    ComplexNumber base, coefficient, lambda; // Represents coefficient * log_(base) (z + lambda)
 
-	public:
+    public:
 
-		Logarithm(ComplexNumber, ComplexNumber);
-		
-		Logarithm(ComplexNumber, ComplexNumber, ComplexNumber);
+        Logarithm(ComplexNumber, ComplexNumber);
+        
+        Logarithm(ComplexNumber, ComplexNumber, ComplexNumber);
 
-		ComplexNumber get_coefficient(void) const;
+        ComplexNumber get_coefficient(void) const;
 
-		ComplexNumber get_lambda(void) const;
+        ComplexNumber get_lambda(void) const;
 
-		ComplexNumber get_base(void) const;
+        ComplexNumber get_base(void) const;
 
-		ComplexNumber eval(const ComplexNumber) const override;
+        ComplexNumber eval(const ComplexNumber) const override;
 
-		Logarithm operator =(const Logarithm &);
+        Logarithm operator =(const Logarithm &);
 
-		bool operator ==(const Logarithm &) const;
+        bool operator ==(const Logarithm &) const;
 
-		bool operator !=(const Logarithm &) const;
-		
-		void print_to_stream(ostream &) const override;
+        bool operator !=(const Logarithm &) const;
+        
+        void print_to_stream(ostream &) const override;
 };
 
 // Trig functions and their inverses.
 class Sine : public Function {
-	ComplexNumber a, b, c; // Represents a * sin(b * z + c)
+    ComplexNumber a, b, c; // Represents a * sin(b * z + c)
 
-	public:
-		Sine();
+    public:
+        Sine();
 
-		Sine(ComplexNumber, ComplexNumber, ComplexNumber);
+        Sine(ComplexNumber, ComplexNumber, ComplexNumber);
 
-		ComplexNumber getA(void) const;
+        ComplexNumber getA(void) const;
 
-		ComplexNumber getB(void) const;
+        ComplexNumber getB(void) const;
 
-		ComplexNumber getC(void) const;
+        ComplexNumber getC(void) const;
 
-		ComplexNumber eval(const ComplexNumber) const override;
-		
-		void print_to_stream(ostream &) const override;
+        ComplexNumber eval(const ComplexNumber) const override;
+        
+        void print_to_stream(ostream &) const override;
 };
 
 class Cosine : public Function {
-	ComplexNumber a, b, c; // Represents a * cos(b * z + c)
+    ComplexNumber a, b, c; // Represents a * cos(b * z + c)
 
-	public:
-		Cosine();
+    public:
+        Cosine();
 
-		Cosine(ComplexNumber, ComplexNumber, ComplexNumber);
+        Cosine(ComplexNumber, ComplexNumber, ComplexNumber);
 
-		ComplexNumber getA(void) const;
+        ComplexNumber getA(void) const;
 
-		ComplexNumber getB(void) const;
+        ComplexNumber getB(void) const;
 
-		ComplexNumber getC(void) const;
+        ComplexNumber getC(void) const;
 
-		ComplexNumber eval(const ComplexNumber) const;
-		
-		void print_to_stream(ostream &) const override;
+        ComplexNumber eval(const ComplexNumber) const;
+        
+        void print_to_stream(ostream &) const override;
 };
 
 class Tangent : public Function {
-	ComplexNumber a, b, c; // Represents a * tan(b * z + c)
+    ComplexNumber a, b, c; // Represents a * tan(b * z + c)
 
-	public:
-		Tangent(ComplexNumber, ComplexNumber, ComplexNumber);
+    public:
+        Tangent(ComplexNumber, ComplexNumber, ComplexNumber);
 
-		ComplexNumber getA(void) const;
-		
-		ComplexNumber getB(void) const;
-		
-		ComplexNumber getC(void) const;
+        ComplexNumber getA(void) const;
+        
+        ComplexNumber getB(void) const;
+        
+        ComplexNumber getC(void) const;
 
-		ComplexNumber eval(const ComplexNumber) const override;
-		
-		void print_to_stream(ostream &) const override;
+        ComplexNumber eval(const ComplexNumber) const override;
+        
+        void print_to_stream(ostream &) const override;
 };
 
 class Cosecant : public Function {

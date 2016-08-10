@@ -44,154 +44,154 @@ const string phi = "phi";
 
 const vector<string> OPERATORS = {PLUS, MINUS, TIMES, DIVIDE, EXP}; // Set of operators, ordered (ascending) by precedence
 const unordered_set<string> FUNCTIONS = {LOG, SIN, COS, TAN, CSC, SEC, COT, ARCSIN, ARCCOS, ARCTAN, ARCCSC, ARCSEC, 
-									 	 ARCCOT, SINH, COSH, TANH, CSCH, TANH, CSCH, SECH, COTH, ARCSINH, ARCCOSH, 
-									 	 ARCTANH, ARCCSCH, ARCSECH, ARCCOTH};
+                                         ARCCOT, SINH, COSH, TANH, CSCH, TANH, CSCH, SECH, COTH, ARCSINH, ARCCOSH, 
+                                         ARCTANH, ARCCSCH, ARCSECH, ARCCOTH};
 const unordered_set<string> CONSTANTS = {e, pi, phi};
 
 class ExpressionTreeNode {
-	public:
-		ExpressionTreeNode(void);
+    public:
+        ExpressionTreeNode(void);
 
-		virtual bool is_op_node(void) const = 0;
+        virtual bool is_op_node(void) const = 0;
 
-		virtual bool is_func_node(void) const = 0;
+        virtual bool is_func_node(void) const = 0;
 
-		virtual bool is_leaf_node(void) const = 0;
+        virtual bool is_leaf_node(void) const = 0;
 
-		virtual bool is_var_node(void) const = 0;
+        virtual bool is_var_node(void) const = 0;
 
-		virtual bool is_const_node(void) const = 0;
+        virtual bool is_const_node(void) const = 0;
 };
 
 class ExpressionTreeBinaryOp : public ExpressionTreeNode {
-	ExpressionTreeNode *left, *right;
-	string op;
+    ExpressionTreeNode *left, *right;
+    string op;
 
-	public:
-		ExpressionTreeBinaryOp(void);
+    public:
+        ExpressionTreeBinaryOp(void);
 
-		ExpressionTreeBinaryOp(string);
+        ExpressionTreeBinaryOp(string);
 
-		ExpressionTreeBinaryOp(string, ExpressionTreeNode *, ExpressionTreeNode *);
+        ExpressionTreeBinaryOp(string, ExpressionTreeNode *, ExpressionTreeNode *);
 
-		~ExpressionTreeBinaryOp();
+        ~ExpressionTreeBinaryOp();
 
-		string get_operator(void) const;
+        string get_operator(void) const;
 
-		void set_operator(string);
+        void set_operator(string);
 
-		ExpressionTreeNode * get_left(void) const;
+        ExpressionTreeNode * get_left(void) const;
 
-		ExpressionTreeNode * get_right(void) const;
+        ExpressionTreeNode * get_right(void) const;
 
-		void set_left(ExpressionTreeNode *);
+        void set_left(ExpressionTreeNode *);
 
-		void set_right(ExpressionTreeNode *);
+        void set_right(ExpressionTreeNode *);
 
-		virtual bool is_op_node(void) const override;
+        virtual bool is_op_node(void) const override;
 
-		virtual bool is_func_node(void) const override;
+        virtual bool is_func_node(void) const override;
 
-		virtual bool is_leaf_node(void) const override;
+        virtual bool is_leaf_node(void) const override;
 
-		virtual bool is_var_node(void) const override;
+        virtual bool is_var_node(void) const override;
 
-		virtual bool is_const_node(void) const override;
+        virtual bool is_const_node(void) const override;
 };
 
 class ExpressionTreeFunction : public ExpressionTreeNode {
-	ExpressionTreeNode *argument;
-	string function;
+    ExpressionTreeNode *argument;
+    string function;
 
-	public:
-		ExpressionTreeFunction(void);
-		
-		ExpressionTreeFunction(string);
+    public:
+        ExpressionTreeFunction(void);
+        
+        ExpressionTreeFunction(string);
 
-		ExpressionTreeFunction(ExpressionTreeNode *);
-		
-		ExpressionTreeFunction(ExpressionTreeNode *, string);
+        ExpressionTreeFunction(ExpressionTreeNode *);
+        
+        ExpressionTreeFunction(ExpressionTreeNode *, string);
 
-		~ExpressionTreeFunction();
+        ~ExpressionTreeFunction();
 
-		ExpressionTreeNode * get_argument(void) const;
+        ExpressionTreeNode * get_argument(void) const;
 
-		string get_function(void) const;
+        string get_function(void) const;
 
-		void set_argument(ExpressionTreeNode *);
+        void set_argument(ExpressionTreeNode *);
 
-		void set_function(const string);
+        void set_function(const string);
 
-		virtual bool is_op_node(void) const override;
+        virtual bool is_op_node(void) const override;
 
-		virtual bool is_func_node(void) const override;
+        virtual bool is_func_node(void) const override;
 
-		virtual bool is_leaf_node(void) const override;
+        virtual bool is_leaf_node(void) const override;
 
-		virtual bool is_var_node(void) const override;
+        virtual bool is_var_node(void) const override;
 
-		virtual bool is_const_node(void) const override;
+        virtual bool is_const_node(void) const override;
 };
 
 class ExpressionTreeLeaf : public ExpressionTreeNode {
-	ComplexNumber val;
+    ComplexNumber val;
 
-	public:
-		ExpressionTreeLeaf(void);
+    public:
+        ExpressionTreeLeaf(void);
 
-		ExpressionTreeLeaf(ComplexNumber);
+        ExpressionTreeLeaf(ComplexNumber);
 
-		~ExpressionTreeLeaf();
+        ~ExpressionTreeLeaf();
 
-		ComplexNumber get_val(void);
+        ComplexNumber get_val(void);
 
-		void set_val(ComplexNumber);
+        void set_val(ComplexNumber);
 
-		virtual bool is_op_node(void) const override;
+        virtual bool is_op_node(void) const override;
 
-		virtual bool is_func_node(void) const override;
+        virtual bool is_func_node(void) const override;
 
-		virtual bool is_leaf_node(void) const override;
+        virtual bool is_leaf_node(void) const override;
 
-		virtual bool is_var_node(void) const override;
+        virtual bool is_var_node(void) const override;
 
-		virtual bool is_const_node(void) const override;
+        virtual bool is_const_node(void) const override;
 };
 
 class ExpressionTreeConstant : public ExpressionTreeNode {
-	string constant;
+    string constant;
 
-	public:
-		ExpressionTreeConstant(string);
+    public:
+        ExpressionTreeConstant(string);
 
-		string get_constant(void) const;
+        string get_constant(void) const;
 
-		void set_constant(const string);
+        void set_constant(const string);
 
-		virtual bool is_op_node(void) const override;
+        virtual bool is_op_node(void) const override;
 
-		virtual bool is_func_node(void) const override;
+        virtual bool is_func_node(void) const override;
 
-		virtual bool is_leaf_node(void) const override;
+        virtual bool is_leaf_node(void) const override;
 
-		virtual bool is_var_node(void) const override;
+        virtual bool is_var_node(void) const override;
 
-		virtual bool is_const_node(void) const override;
+        virtual bool is_const_node(void) const override;
 };
 
 class ExpressionTreeVariable : public ExpressionTreeNode {
-	public:
-		ExpressionTreeVariable(void);
+    public:
+        ExpressionTreeVariable(void);
 
-		virtual bool is_op_node(void) const override;
+        virtual bool is_op_node(void) const override;
 
-		virtual bool is_func_node(void) const override;
+        virtual bool is_func_node(void) const override;
 
-		virtual bool is_leaf_node(void) const override;
+        virtual bool is_leaf_node(void) const override;
 
-		virtual bool is_var_node(void) const override;
+        virtual bool is_var_node(void) const override;
 
-		virtual bool is_const_node(void) const override;
+        virtual bool is_const_node(void) const override;
 };
 
 ComplexNumber evaluate_tree(const ExpressionTreeNode *, const ComplexNumber);
